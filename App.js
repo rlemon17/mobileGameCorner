@@ -6,6 +6,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import HomeScreen from './components/HomeScreen';
 import TicTacToe from './components/TicTacToe';
+import Colors from './components/Colors';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +18,7 @@ function App() {
           initialRouteName='Home'
           screenOptions={{
             headerStyle: {
-              backgroundColor: '#00B2C2',
+              backgroundColor: Colors.primary,
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
