@@ -9,19 +9,23 @@ const TicTacToe = () => {
 
     // 0 - Settings, 1 - Play, 2 - Game Over
     const [gameMode, setGameMode] = useState(0);
+    const [p1, setP1] = useState('X');
+    const [cpuMode, setCpuMode] = useState(true);
 
     const handleModeZero = () => {
         setGameMode(0);
     }
 
-    const handleModeOne = () => {
+    const handleModeOne = (p1Choice, cpuMode) => {
+        setP1(p1Choice);
+        setCpuMode(cpuMode);
         setGameMode(1);
     }
 
     return (
         <View style={styles.gameContainer}>
           {gameMode === 0 && <TTTStart onStart={handleModeOne}/>}
-          {gameMode === 1 && <TTTGame onEnd={handleModeZero}/>}
+          {gameMode === 1 && <TTTGame onEnd={handleModeZero} p1={p1} cpuMode={cpuMode} />}
         </View>
     );
 }

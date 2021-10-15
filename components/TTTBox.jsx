@@ -6,11 +6,11 @@ import Colors from './Colors';
 
 const TTTBox = (props) => {
 
-    const [symbol, setSymbol] = useState(props.symbol);
+    let symbol = props.symbol;
 
     const handlePress = () => {
         if (symbol === '') {
-            setSymbol(props.turn);
+            symbol = props.turn;
             props.handleMove(props.id, props.turn);
         }
         else {

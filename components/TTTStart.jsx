@@ -8,10 +8,16 @@ const TTTStart = (props) => {
 
     const [numPlayers, setNumPlayers] = useState(1);
     const [cpu, setCpu] = useState(1);
-    const [first, setFirst] = useState(1);
+    const [first, setFirst] = useState('X');
 
     const startGame = () => {
-        props.onStart();
+        let cpuMode = true;
+
+        if (numPlayers === 2) {
+            cpuMode = false;
+        }
+
+        props.onStart(first, cpuMode);
     }
 
     return (
@@ -51,17 +57,17 @@ const TTTStart = (props) => {
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.text}>First Move:</Text>
+                <Text style={styles.text}>Player 1:</Text>
                 <View style={styles.settingsRow}>
                     <TouchableOpacity 
-                        style={[styles.button2, first === 1 && styles.button2Selected]}
-                        onPress={() => setFirst(1)}
+                        style={[styles.button2, first === 'X' && styles.button2Selected]}
+                        onPress={() => setFirst('X')}
                     >
                         <Text>X</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        style={[styles.button2, first === 2 && styles.button2Selected]}
-                        onPress={() => setFirst(2)}
+                        style={[styles.button2, first === 'O' && styles.button2Selected]}
+                        onPress={() => setFirst('O')}
                     >
                         <Text>O</Text>
                     </TouchableOpacity>

@@ -19,7 +19,7 @@ const TTTGame = (props) => {
     ]);
 
     const [moves, setMoves] = useState(0);
-    const [turn, setTurn] = useState('X');
+    const [turn, setTurn] = useState(props.p1);
 
     const [overMsg, setOverMsg] = useState("It's a tie!");
     const [isGameOver, setIsGameOver] = useState(false);
@@ -29,6 +29,8 @@ const TTTGame = (props) => {
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ];
+
+    const cpuMode = props.cpuMode;
 
     const handleMove = (index, symbol) => {
 
@@ -44,6 +46,17 @@ const TTTGame = (props) => {
         else {
             setTurn('X');
         }
+    }
+
+    const easyCpu = () => {
+        
+        let choice = Math.floor(Math.random()*9);
+
+        while (gameArray[choice] !== '') {
+            choice = Math.floor(Math.random()*9);
+        }
+
+        handleMove(choice, turn);
     }
 
     const handleReset = () => {
@@ -79,13 +92,20 @@ const TTTGame = (props) => {
     }
 
     useEffect(() => {
+        
         if (turn === 'O') {
             checkGameOver('X');
         }
         else {
             checkGameOver('O');
         }
-    }, [turn, gameArray])
+
+        // Handle computer's move
+        if (cpuMode && !isGameOver && turn !== props.p1) {
+            easyCpu();
+        }
+
+    }, [turn])
 
     return (
         <View>
