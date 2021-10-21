@@ -48,6 +48,7 @@ const TTTGame = (props) => {
         }
     }
 
+    // AI for Easy, just randomly choose an open spot
     const easyCpu = () => {
         
         let choice = Math.floor(Math.random()*9);
@@ -56,6 +57,91 @@ const TTTGame = (props) => {
             choice = Math.floor(Math.random()*9);
         }
 
+        handleMove(choice, turn);
+    }
+
+    // AI for Hard
+    // Highest priority = changing choice last
+    const hardCpu = () => {
+
+        // Default random choice if none of the below checks pass
+        let choice = Math.floor(Math.random()*9);
+
+        while (gameArray[choice] !== '') {
+            choice = Math.floor(Math.random()*9);
+        }
+
+        // Used to determine if player or self (CPU) is one space from winning
+        let loseCount = 0;
+        let loseIndex = choice;
+
+        let winCount = 0;
+        let winIndex = choice;
+
+        // Stop player from winning by checking if one away
+        winningRows.forEach(possibleWin => {
+
+            loseCount = 0;
+
+            possibleWin.forEach(index => {
+
+                if (gameArray[index] === props.p1) {
+                    loseCount = loseCount + 1;
+                }
+
+                else if (gameArray[index] === '') {
+                    loseIndex = index;
+                }
+
+                // Remove possibility altogether if any space on this row is occupied by other character
+                else {
+                    loseCount = loseCount - 1;
+                }
+
+            })
+
+            // If count is 2 at this point, the missingIndex should be the move
+            if (loseCount === 2) {
+                choice = loseIndex;
+            }
+
+        })
+
+        // Highest priority should be winning and ending the game
+        winningRows.forEach(possibleWin => {
+
+            // Determine CPU Character
+            let cpuChar = 'O';
+            if (props.p1 === 'O') {
+                cpuChar = 'X';
+            }
+
+            winCount = 0;
+
+            possibleWin.forEach(index => {
+
+                if (gameArray[index] === cpuChar) {
+                    winCount = winCount + 1;
+                }
+
+                else if (gameArray[index] === '') {
+                    winIndex = index;
+                }
+
+                else {
+                    winCount = winCount - 1;
+                }
+
+            })
+
+            // If count is 2 at this point, the missingIndex should be the move
+            if (winCount === 2) {
+                choice = winIndex;
+            }
+
+        })
+
+        // Make the move
         handleMove(choice, turn);
     }
 
@@ -72,10 +158,13 @@ const TTTGame = (props) => {
 
     const checkGameOver = (player) => {
 
+        let cpuMove = true;
+
         winningRows.forEach(condition => {
             if (gameArray[condition[0]] === player && gameArray[condition[1]] === player && gameArray[condition[2]] === player) {
                 setOverMsg(`${player} wins!`);
                 setIsGameOver(true);
+                cpuMove = false;
 
                 if (player === 'X') {
                     setXWins(prev => prev + 1);
@@ -88,6 +177,17 @@ const TTTGame = (props) => {
 
         if (moves >= 9) {
             setIsGameOver(true);
+            cpuMove = false;
+        }
+
+        // Handle computer's move
+        if (cpuMode && cpuMove && turn !== props.p1) {
+            if (props.cpuDifficulty === 1) {
+                easyCpu();
+            }
+            else {
+                hardCpu();
+            }
         }
     }
 
@@ -100,12 +200,17 @@ const TTTGame = (props) => {
             checkGameOver('O');
         }
 
-        // Handle computer's move
-        if (cpuMode && !isGameOver && turn !== props.p1) {
+    }, [turn])
+
+    // Edge case for CPU being first move
+    if (cpuMode && moves == 0 && turn !== props.p1) {
+        if (props.cpuDifficulty === 1) {
             easyCpu();
         }
-
-    }, [turn])
+        else {
+            hardCpu();
+        }
+    }
 
     return (
         <View>

@@ -4,25 +4,15 @@ import { Title, Card } from 'react-native-paper';
 
 import Colors from './Colors';
 
-const TTTStart = (props) => {
+const MMStart = (props) => {
 
     const [numPlayers, setNumPlayers] = useState(1);
-    const [cpu, setCpu] = useState(1);
-    const [first, setFirst] = useState('X');
-
-    const startGame = () => {
-        let cpuMode = true;
-
-        if (numPlayers === 2) {
-            cpuMode = false;
-        }
-
-        props.onStart(first, cpuMode, cpu);
-    }
+    const [p1Role, setP1Role] = useState('codemaker');
+    const [dupes, setDupes] = useState(true);
 
     return (
         <View style={styles.wholeContainer}>
-            <Title style={styles.title}>Tic Tac Toe Settings</Title>
+            <Title style={styles.title}>Mastermind Settings</Title>
             <Card style={styles.settingsContainer}>
 
                 <Text style={styles.text}>Number of Players:</Text>
@@ -41,41 +31,41 @@ const TTTStart = (props) => {
                     </TouchableOpacity>
                 </View>
 
-                <Text style={styles.text}>CPU Difficulty:</Text>
-                <View style={styles.settingsRow}>
-                    <TouchableOpacity 
-                        style={[styles.button2, cpu === 1 && styles.button2Selected, numPlayers === 2 && styles.buttonOff]}
-                        onPress={() => setCpu(1)}
-                    >
-                        <Text>Easy</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[styles.button2, cpu === 2 && styles.button2Selected, numPlayers === 2 && styles.buttonOff]}
-                        onPress={() => setCpu(2)}
-                    >
-                        <Text>Hard</Text>
-                    </TouchableOpacity>
-                </View>
-
                 <Text style={styles.text}>Player 1:</Text>
                 <View style={styles.settingsRow}>
                     <TouchableOpacity 
-                        style={[styles.button2, first === 'X' && styles.button2Selected]}
-                        onPress={() => setFirst('X')}
+                        style={[styles.button2, p1Role === 'codemaker' && styles.button2Selected]}
+                        onPress={() => setP1Role('codemaker')}
                     >
-                        <Text>X</Text>
+                        <Text>Codemaker</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        style={[styles.button2, first === 'O' && styles.button2Selected]}
-                        onPress={() => setFirst('O')}
+                        style={[styles.button2, p1Role === 'hacker' && styles.button2Selected]}
+                        onPress={() => setP1Role('hacker')}
                     >
-                        <Text>O</Text>
+                        <Text>Hacker</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Text style={styles.text}>Allow Duplicate Colors:</Text>
+                <View style={styles.settingsRow}>
+                    <TouchableOpacity 
+                        style={[styles.button2, dupes && styles.button2Selected]}
+                        onPress={() => setDupes(true)}
+                    >
+                        <Text>Yes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={[styles.button2, !dupes && styles.button2Selected]}
+                        onPress={() => setDupes(false)}
+                    >
+                        <Text>No</Text>
                     </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity 
                     style={styles.button}
-                    onPress={startGame}
+                    onPress={() => props.onStart()}
                 >
                     <Text style={styles.buttonText}>Start</Text>
                 </TouchableOpacity>
@@ -95,7 +85,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        bottom: 70
+        bottom: 20
     },
     text: {
         textAlign: 'center',
@@ -143,4 +133,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default TTTStart;
+export default MMStart;

@@ -6,6 +6,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 
 import HomeScreen from './components/HomeScreen';
 import TicTacToe from './components/TicTacToe';
+import Mastermind from './components/Mastermind';
 import Colors from './components/Colors';
 
 const Stack = createNativeStackNavigator();
@@ -28,6 +29,7 @@ function App() {
         >
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="TicTacToe" component={TicTacToe}/>
+          <Stack.Screen name="Mastermind" component={Mastermind}/>
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

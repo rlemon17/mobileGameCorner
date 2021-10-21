@@ -11,21 +11,23 @@ const TicTacToe = () => {
     const [gameMode, setGameMode] = useState(0);
     const [p1, setP1] = useState('X');
     const [cpuMode, setCpuMode] = useState(true);
+    const [cpuDifficulty, setCpuDifficulty] = useState(1);
 
     const handleModeZero = () => {
         setGameMode(0);
     }
 
-    const handleModeOne = (p1Choice, cpuMode) => {
+    const handleModeOne = (p1Choice, cpuMode, cpuDiff) => {
         setP1(p1Choice);
         setCpuMode(cpuMode);
+        setCpuDifficulty(cpuDiff);
         setGameMode(1);
     }
 
     return (
         <View style={styles.gameContainer}>
           {gameMode === 0 && <TTTStart onStart={handleModeOne}/>}
-          {gameMode === 1 && <TTTGame onEnd={handleModeZero} p1={p1} cpuMode={cpuMode} />}
+          {gameMode === 1 && <TTTGame onEnd={handleModeZero} p1={p1} cpuMode={cpuMode} cpuDifficulty={cpuDifficulty} />}
         </View>
     );
 }
