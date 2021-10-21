@@ -1,34 +1,96 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
 
+import Colors from './Colors';
+import HomeConfirm from './HomeConfirm';
+
 const HomeScreen = ({ navigation }) => {
+    const [selected, setSelected] = useState(1);
+    const [route, setRoute] = useState('TicTacToe');
+    const [gameInfo, setGameInfo] = useState('Get three in a row before your opponent does! (2 players or 1 player VS a computer)')
+
+    const confirmGame = () => {
+        navigation.navigate(route);
+    }
+
     return (
-        <View>
+        <View style={styles.entireContainer}>
             <View style={styles.titleContainer}>
-                <Text style={styles.title}>Lemon's Mobile Game Corner</Text>
+                <Text style={styles.title}>Lemon's</Text>
+                <Text style={styles.title2}>Mobile Game Corner</Text>
             </View>
             <View style={styles.gameContainer}>
-                <Card style={styles.cardStyle}>
-                    <Button
-                        title="Tic Tac Toe"
-                        onPress={() => navigation.navigate('TicTacToe')}
-                    />
-                </Card>
+
+                <TouchableOpacity 
+                    style={[styles.button, selected === 1 && styles.buttonSelected]}
+                    onPress={() => {
+                        setRoute('TicTacToe')
+                        setSelected(1)
+                        setGameInfo('Get three in a row before your opponent does! (2 players or 1 player VS a computer)')
+                    }}
+                >
+                    <Text style={styles.buttonText}>Tic Tac Toe</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, selected === 2 && styles.buttonSelected]}
+                    onPress={() => {
+                        setRoute('Mastermind')
+                        setSelected(2)
+                        setGameInfo('Crack the password the codemaker makes, or be the codemaker yourself! (2 players or 1 player VS a computer)')
+                    }}
+                >
+                    <Text style={styles.buttonText}>Mastermind</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, selected === 3 && styles.buttonSelected]}
+                    onPress={() => {
+                        setRoute('TicTacToe')
+                        setSelected(3)
+                        setGameInfo('Sit amet mauris commodo quis imperdiet massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
+                    }}
+                >
+                    <Text style={styles.buttonText}>Some Game 3</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={[styles.button, selected === 4 && styles.buttonSelected]}
+                    onPress={() => {
+                        setRoute('TicTacToe')
+                        setSelected(4)
+                        setGameInfo('Enim sit amet venenatis urna cursus eget nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
+                    }}
+                >
+                    <Text style={styles.buttonText}>Some Game 4</Text>
+                </TouchableOpacity>
+
             </View>
+
+            <HomeConfirm handlePress={confirmGame} gameInfo={gameInfo} />
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    entireContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     gameContainer: {
         alignItems: 'center',
         justifyContent: 'center',
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
         textAlign: 'center'
+    },
+    title2: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 5
     },
     titleContainer: {
         padding: 20
@@ -39,6 +101,26 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 20
+    },
+    button: {
+        padding: 10,
+        borderRadius: 20,
+        backgroundColor: Colors.accentOff,
+        marginHorizontal: "1%",
+        marginBottom: 20,
+        minWidth: 200,
+        minHeight: 60,
+        textAlign: "center",
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonSelected: {
+        backgroundColor: Colors.accent
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: 18
     }
 })
 
