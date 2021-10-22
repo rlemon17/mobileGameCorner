@@ -9,8 +9,8 @@ const MMHintPeg = (props) => {
     return (
         <View 
             style={[styles.hintPeg,
-                props.num === '1' && styles.one,
-                props.num === '2' && styles.two
+                props.num === 1 && styles.one,
+                props.num === 2 && styles.two
             ]} 
         />
     );
