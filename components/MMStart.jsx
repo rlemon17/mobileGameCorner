@@ -7,8 +7,12 @@ import Colors from './Colors';
 const MMStart = (props) => {
 
     const [numPlayers, setNumPlayers] = useState(1);
-    const [p1Role, setP1Role] = useState('codemaker');
+    const [p1Role, setP1Role] = useState('Codemaker');
     const [dupes, setDupes] = useState(true);
+
+    const onSubmit = () => {
+        props.onStart(p1Role);
+    }
 
     return (
         <View style={styles.wholeContainer}>
@@ -34,14 +38,14 @@ const MMStart = (props) => {
                 <Text style={styles.text}>Player 1:</Text>
                 <View style={styles.settingsRow}>
                     <TouchableOpacity 
-                        style={[styles.button2, p1Role === 'codemaker' && styles.button2Selected]}
-                        onPress={() => setP1Role('codemaker')}
+                        style={[styles.button2, p1Role === 'Codemaker' && styles.button2Selected]}
+                        onPress={() => setP1Role('Codemaker')}
                     >
                         <Text>Codemaker</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        style={[styles.button2, p1Role === 'hacker' && styles.button2Selected]}
-                        onPress={() => setP1Role('hacker')}
+                        style={[styles.button2, p1Role === 'Hacker' && styles.button2Selected]}
+                        onPress={() => setP1Role('Hacker')}
                     >
                         <Text>Hacker</Text>
                     </TouchableOpacity>
@@ -65,7 +69,7 @@ const MMStart = (props) => {
 
                 <TouchableOpacity 
                     style={styles.button}
-                    onPress={() => props.onStart()}
+                    onPress={onSubmit}
                 >
                     <Text style={styles.buttonText}>Start</Text>
                 </TouchableOpacity>

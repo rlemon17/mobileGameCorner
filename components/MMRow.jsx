@@ -6,7 +6,7 @@ import Colors from './Colors';
 import MMCodePeg from './MMCodePeg';
 import MMHintPeg from './MMHintPeg';
 
-const MMRow = () => {
+const MMRow = (props) => {
 
     const [code, setCode] = useState([0,0,0,0]);
     const [hint, setHint] = useState([0,0,0,0]);
@@ -18,6 +18,7 @@ const MMRow = () => {
     const onCodeChange = (index, value) => {
         const newArray = [...code];
         newArray[index] = value;
+        props.submitGuess(newArray);
         setCode(newArray);
     }
 
@@ -42,6 +43,7 @@ const MMRow = () => {
             newArray.push(0);
         }
 
+        props.submitHint(newArray);
         setModalVisible(!modalVisible);
         setHint(newArray);
     }
@@ -50,6 +52,7 @@ const MMRow = () => {
         <View style={styles.gameRow}>
 
             {/* =================== Code =================== */}
+            <Text style={styles.idText}>{props.id+1}</Text>
             <View style={styles.codeContainer}>
                 <MMCodePeg id={0} num={code[0]} onSelect={onCodeChange} />
                 <MMCodePeg id={1} num={code[1]} onSelect={onCodeChange} />
@@ -116,12 +119,12 @@ const MMRow = () => {
 
                         </View>
 
-                        <Pressable
-                            style={styles.buttonClose}
-                            onPress={onHintChange}
-                        >
-                            <Text style={styles.textStyle}>Submit</Text>
-                        </Pressable>
+                            <Pressable
+                                style={styles.buttonClose}
+                                onPress={onHintChange}
+                            >
+                                <Text style={styles.textStyle}>Close</Text>
+                            </Pressable>    
 
                     </View>
                 </View>
@@ -146,9 +149,10 @@ const MMRow = () => {
 const styles = StyleSheet.create({
     gameRow: {
         flexDirection: 'row',
-        backgroundColor: 'black',
-        width: '100%',
-        height: '10%'
+        width: 375,
+        height: 65,
+        backgroundColor: Colors.bgOff,
+        alignItems: 'center'
     },
     codeContainer: {
         flex: 4,
@@ -164,6 +168,9 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         backgroundColor: '#ffffff'
+    },
+    inactiveContainer: {
+        backgroundColor: Colors.bgOff
     },
     codePeg: {
         width: 50,
@@ -213,13 +220,15 @@ const styles = StyleSheet.create({
     buttonClose: {
         borderRadius: 25,
         padding: 15,
-        backgroundColor: Colors.accent
+        backgroundColor: Colors.accent,
+        marginHorizontal: 5,
+        marginTop: 10
     },
     textStyle: {
         color: "white",
         fontWeight: "bold",
         textAlign: "center",
-        fontSize: 18
+        fontSize: 14
     },
     modalText: {
         marginBottom: 3,
@@ -235,6 +244,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 15
+    },
+    idText: {
+        marginLeft: 2,
+        color: '#ffffff'
     }
 })
 
