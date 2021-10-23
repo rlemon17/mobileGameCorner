@@ -76,7 +76,7 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     entireContainer: {
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'center'
     },
     gameContainer: {
         alignItems: 'center',
