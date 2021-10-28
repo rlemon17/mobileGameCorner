@@ -11,7 +11,13 @@ const MMStart = (props) => {
     const [dupes, setDupes] = useState(true);
 
     const onSubmit = () => {
-        props.onStart(p1Role);
+        let cpuMode = false;
+
+        if (numPlayers === 1) {
+            cpuMode = true;
+        }
+
+        props.onStart(p1Role, cpuMode);
     }
 
     return (

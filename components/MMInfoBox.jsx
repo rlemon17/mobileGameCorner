@@ -26,10 +26,10 @@ const MMInfoBox = (props) => {
             <View style={{flexDirection: 'row'}}>
 
                 <TouchableOpacity style={styles.button} onPress={() => onNext()}>
-                    <Text>Submit</Text>
+                    <Text>Next</Text>
                 </TouchableOpacity>
 
-                {props.phase === 2 && <TouchableOpacity style={[styles.button, styles.button2]} onPress={onShow}>
+                {((props.phase === 2 && !props.cpuMode) || (props.phase === 2 && props.p1Role === 'Codemaker')) && <TouchableOpacity style={[styles.button, styles.button2]} onPress={onShow}>
                     <Text>{showingAnswer ? 'Hide' : 'Show'} Answer</Text>
                 </TouchableOpacity>}    
 

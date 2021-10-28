@@ -8,8 +8,8 @@ import MMHintPeg from './MMHintPeg';
 
 const MMRow = (props) => {
 
-    const [code, setCode] = useState([0,0,0,0]);
-    const [hint, setHint] = useState([0,0,0,0]);
+    const [code, setCode] = useState(props.code);
+    const [hint, setHint] = useState(props.hint);
     const [modalVisible, setModalVisible] = useState(false);
 
     const [numDark, setNumDark] = useState(0);
@@ -24,28 +24,40 @@ const MMRow = (props) => {
 
     const onHintChange = () => {
 
-        if (numDark + numLight > 4 || numDark < 0 || numLight < 0) {
-            Alert.alert("Invalid submission", "Make sure both values are positive and aren't greater than 4 when added together.", [{text: "OK", style: "cancel"}]);
-            return;
+        // Player Codemaker Error Check
+        if (!props.cpuMode || props.p1Role === 'Codemaker') {
+            if (numDark + numLight > 4 || numDark < 0 || numLight < 0) {
+                Alert.alert("Invalid submission", "Make sure both values are positive and aren't greater than 4 when added together.", [{text: "OK", style: "cancel"}]);
+                return;
+            }
+
+            const newArray = [];
+
+            for (let i = 0; i < numDark; i++) {
+                newArray.push(2);
+            }
+
+            for (let i = 0; i < numLight; i++) {
+                newArray.push(1);
+            }
+
+            while (newArray.length < 4) {
+                newArray.push(0);
+            }
+
+            props.submitHint(newArray);
+            setModalVisible(!modalVisible);
+            setHint(newArray);      
         }
 
-        const newArray = [];
-
-        for (let i = 0; i < numDark; i++) {
-            newArray.push(2);
+        // Codemaker AI Hint
+        else {
+            props.submitHint(props.hint);
+            setModalVisible(!modalVisible);
+            setHint(props.hint);
         }
 
-        for (let i = 0; i < numLight; i++) {
-            newArray.push(1);
-        }
-
-        while (newArray.length < 4) {
-            newArray.push(0);
-        }
-
-        props.submitHint(newArray);
-        setModalVisible(!modalVisible);
-        setHint(newArray);
+        
     }
 
     return (

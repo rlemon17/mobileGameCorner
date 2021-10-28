@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, Alert } from 'react-native';
 import { Card } from 'react-native-paper';
 
@@ -26,8 +26,11 @@ const MMGame = (props) => {
     const [gameRows, setGameRows] = useState([]);
     const [turnNum, setTurnNum] = useState(0);
 
-    // For viewing answer on Codemaker's turn
-    const [showAnswer, setShowAnswer] = useState(true);
+    // For handling AI
+    const cpuMode = props.cpuMode;
+
+    // For viewing answer on Codemaker's turn. Only show if 2 human players or CPU is hacker
+    const [showAnswer, setShowAnswer] = useState((!cpuMode || p1Role === 'Codemaker'));
 
     // For keeping track of answer even when re-rendering
     const [answer, setAnswer] = useState([0,0,0,0]);
@@ -36,8 +39,7 @@ const MMGame = (props) => {
     const [currentGuess, setCurrentGuess] = useState([0,0,0,0]);
     const [currentHint, setCurrentHint] = useState([0,0,0,0]);
 
-    // For only keeping one row of the game active
-
+    // ======================= FUNCTIONS =========================
     const onShowAnswer = () => {
         setShowAnswer(prev => !prev);
     }
@@ -55,14 +57,51 @@ const MMGame = (props) => {
     }
 
     const addRow = () => {
-        setTurnNum(prev => prev + 1);
-        setGameRows(prev => [...prev, <MMRow 
-            key={turnNum} 
-            id={turnNum} 
-            onShowAnswer={onShowAnswer} 
-            submitGuess={onChangeGuess}
-            submitHint={onChangeHint}
-        />]);
+
+        // Have Hacker AI generate guess with this new row
+        if (cpuMode && p2Role === 'Hacker') {
+            setTurnNum(prev => prev + 1);
+            setCurrentHint([0,0,0,0]);
+
+            let newCpuGuess = [
+                Math.floor(Math.random()*6)+1,
+                Math.floor(Math.random()*6)+1,
+                Math.floor(Math.random()*6)+1,
+                Math.floor(Math.random()*6)+1,
+            ];
+
+            setCurrentGuess(newCpuGuess);
+
+            setGameRows(prev => [...prev, <MMRow 
+                key={turnNum} 
+                id={turnNum}
+                code={newCpuGuess}
+                hint={[0,0,0,0]} 
+                onShowAnswer={onShowAnswer} 
+                submitGuess={onChangeGuess}
+                submitHint={onChangeHint}
+                cpuMode={cpuMode}
+                p1Role={p1Role}
+            />]);   
+        }
+
+        // Otherwise, Hacker is a human player, just add an empty row
+        else {
+            setTurnNum(prev => prev + 1);
+            setCurrentHint([0,0,0,0]);
+            setCurrentGuess([0,0,0,0]);
+            setGameRows(prev => [...prev, <MMRow 
+                key={turnNum} 
+                id={turnNum}
+                code={[0,0,0,0]}
+                hint={[0,0,0,0]} 
+                onShowAnswer={onShowAnswer} 
+                submitGuess={onChangeGuess}
+                submitHint={onChangeHint}
+                cpuMode={cpuMode}
+                p1Role={p1Role}
+            />]);    
+        }
     }
 
     // Generates the correct hint array to make sure codemaster is giving accurate hints
@@ -80,6 +119,8 @@ const MMGame = (props) => {
                 indicesLeft.splice(indexToSplice, 1);
             }
         }
+
+        let indicesCountedFor = [];
         
         // Check for light pegs
         // Pick index to compare all to
@@ -91,20 +132,24 @@ const MMGame = (props) => {
             // Compare to the rest of the indices
             indicesLeft.forEach(indexOfGuess => {
 
-                // Make sure don't count self
+                // Don't count self since we already checked that
                 if (indexOfCorrect === indexOfGuess) {
                     return;
                 }
 
                 else {
                     if (correct[indexOfCorrect] === guess[indexOfGuess]) {
-                        matchingColor = true;
+                        // Check if we already counted this index for answer dupes
+                        if (!indicesCountedFor.includes(indexOfGuess) && !matchingColor) {
+                            matchingColor = true;
+                            indicesCountedFor.push(indexOfGuess);
+                        }
                     }
                 }
 
             })
 
-            // If true, there was a match somewhere. Makes sure we only add 1 in case of dupes
+            // If true, there was a match somewhere. Makes sure we only add 1 in case of guess dupes
             if (matchingColor) {
                 expectedHint.push(1);
             }
@@ -128,71 +173,108 @@ const MMGame = (props) => {
 
     const nextPhase = () => {
 
-        // 0 - Codemaker sets code, 1 - Hacker guess, 2 - Codemaker rates
+        // 0 - Codemaker sets code, 1 - Hacker guesses, 2 - Codemaker rates
 
-        // Change game phase
+        // ================================= PHASE 0 =================================
         if (phase === 0) {
 
-            // Check for invalid code
-            if (answer.includes(0)) {
-                Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
-                return
+            // Handle Codemaker AI
+            if (cpuMode && p2Role === 'Codemaker') {
+                setAnswer([
+                    Math.floor(Math.random()*6)+1,
+                    Math.floor(Math.random()*6)+1,
+                    Math.floor(Math.random()*6)+1,
+                    Math.floor(Math.random()*6)+1,
+                ])
             }
 
+            // Player Codemaker error checks
+            else {
+                // Check for invalid code
+                if (answer.includes(0)) {
+                    Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
+                    return
+                }    
+            }
+            
             setShowAnswer(false);
             setPhase(1);
             addRow();
         }
 
+        // ================================= PHASE 1 ==================================
         else if (phase === 1) {
 
-            // Check for invalid code
-            if (currentGuess.includes(0)) {
-                Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
-                return
+            // Check for invalid guess if Hacker is a player
+            if (!cpuMode || p1Role === 'Hacker') {
+                if (currentGuess.includes(0)) {
+                    Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
+                    return
+                }    
+            }
+
+            // HANDLE COMPUTER MODE
+            // Set up Codemaker AI to generate guess for next phase
+            if (cpuMode && p2Role === 'Codemaker') {
+
+                // Generate guess
+                let newCpuHint = getHint(answer, currentGuess);
+                setCurrentHint(newCpuHint);
+
+                // Replace current row so it re-renders
+                let newRows = [...gameRows];
+                newRows = newRows.filter((row, index) => index !== turnNum-1);
+                newRows = [...newRows, <MMRow 
+                    key={turnNum-1*100} 
+                    id={turnNum-1}
+                    code={currentGuess}
+                    hint={newCpuHint}
+                    onShowAnswer={onShowAnswer} 
+                    submitGuess={onChangeGuess}
+                    submitHint={onChangeHint}
+                    cpuMode={cpuMode}
+                    p1Role={p1Role}
+                />]
+                setGameRows(newRows);
             }
 
             setPhase(2);
         }
 
+        // ================================= PHASE 2 =================================
         else {
-
-            // Check that hint was accurate first
-            if (checkEqual(getHint(answer,currentGuess), currentHint)) {
-
-                // GAME OVER CHECK 1 --- currentHint is all 4 darks, Hacker wins
-                if (checkEqual([2,2,2,2], currentHint)) {
-                    setGameOver(true);
-                    setWinner('Hacker');
-                    setShowAnswer(true);
-                    return;
-                }
-
-                // GAME OVER CHECK 1 --- 12th round, Codemaker wins
-                else if (turnNum >= 12) {
-                    setGameOver(true);
-                    setWinner('Codemaker');
-                    setShowAnswer(true);
-                    return;
-                }
-
-                setShowAnswer(false);
-                setPhase(1);
-                addRow();
-
-                if (p1Role === 'Codemaker') {
-                    setP1Score(prev => prev + 1);
-                }
-        
-                else {
-                    setP2Score(prev => prev + 1);
-                }
-            }
-
-            // Otherwise, hint was wrong
-            else {
+            // PLAYER CODEMAKER error check. Nothing else should run if incorrect hint.
+            if ((!cpuMode || p1Role === 'Codemaker') && !checkEqual(getHint(answer,currentGuess), currentHint)) {
                 Alert.alert("Inaccurate Hint", "Please make sure your hint is correct.", [{text: "OK", style: "cancel"}]);
                 return;
+            }
+
+            // GAME OVER CHECK 1 --- currentHint is all 4 darks, Hacker wins
+            if (checkEqual([2,2,2,2], currentHint)) {
+                setGameOver(true);
+                setWinner('Hacker');
+                setShowAnswer(true);
+                return;
+            }
+
+            // GAME OVER CHECK 1 --- 12th round, Codemaker wins
+            else if (turnNum >= 12) {
+                setGameOver(true);
+                setWinner('Codemaker');
+                setShowAnswer(true);
+                return;
+            }
+
+            setShowAnswer(false);
+            setPhase(1);
+            addRow();
+
+            if (p1Role === 'Codemaker') {
+                setP1Score(prev => prev + 1);
+            }
+    
+            else {
+                setP2Score(prev => prev + 1);
             }
             
         }
@@ -218,6 +300,7 @@ const MMGame = (props) => {
         if (shouldSwitch) {
             
             if (p1Role === 'Codemaker') {
+                setShowAnswer(false);
                 setP1Role('Hacker');
                 setP2Role('Codemaker');
             }
@@ -229,14 +312,18 @@ const MMGame = (props) => {
 
         }
 
+        if (!shouldSwitch) {
+            if (p1Role === 'Hacker') {
+                setShowAnswer(false);
+            }
+        }
+
         // Reset States
         setPhase(0);
         setTurn('Codemaker');
         setWinner('');
         setGameRows([]);
         setTurnNum(0);
-        setShowAnswer(true);
-
         setAnswer([0,0,0,0]);
         setCurrentGuess([0,0,0,0]);
         setCurrentHint([0,0,0,0]);
@@ -270,10 +357,20 @@ const MMGame = (props) => {
                         onShow={onShowAnswer}
                         turn={turn} 
                         phase={phase}
+                        cpuMode={cpuMode}
+                        p1Role={p1Role}
                         text={
-                            [phase === 0 && 'Create your code for the round.',
-                            phase === 1 && 'Input your guess for this row.',
-                            phase === 2 && "Rate the hacker's guess for this row."]
+                            [
+                                (cpuMode && p2Role === 'Codemaker' && phase === 0) && 'CPU has created the code, press Next.',
+                                (cpuMode && p2Role === 'Codemaker' && phase === 1) && 'Input your guess for this row.',
+                                (cpuMode && p2Role === 'Codemaker' && phase === 2) && 'CPU has rated your guess, press Next.',
+                                (cpuMode && p2Role === 'Hacker' && phase === 0) && 'Create your code for the round.',
+                                (cpuMode && p2Role === 'Hacker' && phase === 1) && 'CPU has made a guess, press Next.',
+                                (cpuMode && p2Role === 'Hacker' && phase === 2) && "Rate the hacker's guess for this row.",
+                                (!cpuMode && phase === 0) && 'Create your code for the round.',
+                                (!cpuMode && phase === 1) && 'Input your guess for this row.',
+                                (!cpuMode && phase === 2) && "Rate the hacker's guess for this row."
+                            ]
                         } 
                     /> : <MMEndBox 
                         winner={winner}
