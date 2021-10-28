@@ -15,9 +15,12 @@ const Mastermind = () => {
 
     const [cpuMode, setCpuMode] = useState(false);
 
-    const handleModeOne = (p1Choice, cpuModeChoice) => {
+    const [dupeMode, setDupeMode] = useState(true);
+
+    const handleModeOne = (p1Choice, cpuModeChoice, dupeChoice) => {
         setP1Role(p1Choice);
         setCpuMode(cpuModeChoice);
+        setDupeMode(dupeChoice);
 
         if (p1Choice === 'Codemaker') {
             setP2Role('Hacker');
@@ -36,7 +39,7 @@ const Mastermind = () => {
     return (
         <View style={styles.wholeContainer}>
             {gameMode === 0 && <MMStart onStart={handleModeOne} />}
-            {gameMode === 1 && <MMGame onQuit={handleModeZero} p1Choice={p1Role} p2Choice={p2Role} cpuMode={cpuMode} />}
+            {gameMode === 1 && <MMGame onQuit={handleModeZero} p1Choice={p1Role} p2Choice={p2Role} cpuMode={cpuMode} dupeMode={dupeMode} />}
         </View>
     );
 }

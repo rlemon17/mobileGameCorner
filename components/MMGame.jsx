@@ -26,8 +26,16 @@ const MMGame = (props) => {
     const [gameRows, setGameRows] = useState([]);
     const [turnNum, setTurnNum] = useState(0);
 
-    // For handling AI
+    // For handling AI mode and no duplicates mode
     const cpuMode = props.cpuMode;
+    const dupeMode = props.dupeMode;
+
+    // AI Hacker
+    const [cpuGuess, setCpuGuess] = useState([0,0,0,0]);
+    const [bestCpuGuess, setBestCpuGuess] = useState([0,0,0,0]);
+    const [bestCpuHintRating, setBestCpuHintRating] = useState(0);
+    const [bestDarkHints, setBestDarkHints] = useState(0);
+    const [bestLightHints, setBestLightHints] = useState(0);
 
     // For viewing answer on Codemaker's turn. Only show if 2 human players or CPU is hacker
     const [showAnswer, setShowAnswer] = useState((!cpuMode || p1Role === 'Codemaker'));
@@ -40,6 +48,27 @@ const MMGame = (props) => {
     const [currentHint, setCurrentHint] = useState([0,0,0,0]);
 
     // ======================= FUNCTIONS =========================
+
+    // Helper function to check if two arrays are equal
+    const checkEqual = (arr1, arr2) => {
+        return Array.isArray(arr1) &&
+        Array.isArray(arr2) &&
+        arr1.length === arr2.length &&
+        arr1.every((val, index) => val === arr2[index]);
+    }
+
+    // Helper function to check if an array contains dupes
+    const checkDupes = (arr) => {
+        for (let i = 0; i < arr.length-1; i++) {
+            for (let j = i+1; j < arr.length; j++) {
+                if (arr[i] === arr[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     const onShowAnswer = () => {
         setShowAnswer(prev => !prev);
     }
@@ -61,15 +90,89 @@ const MMGame = (props) => {
         // Have Hacker AI generate guess with this new row
         if (cpuMode && p2Role === 'Hacker') {
             setTurnNum(prev => prev + 1);
+
+            // Randomly keep some code pegs based on previous dark pegs
+            // Randomly keep colors based on previous light pegs
+            let numDarkHints = 0;
+            let numLightHints = 0;
+
+            for (let i = 0; i < 4; i++) {
+                if (currentHint[i] === 2) {
+                    numDarkHints++;
+                }
+                if (currentHint[i] === 1) {
+                    numLightHints++;
+                }
+            }
+
+            // For keeping track of the best row played so far
+            let hintScore = (numDarkHints*5) + (numLightHints*3);
+
+            // Update the best row if needed
+            if (hintScore > bestCpuHintRating) {
+                setBestCpuHintRating(hintScore);
+                setBestCpuGuess(cpuGuess);
+                setBestDarkHints(numDarkHints);
+                setBestLightHints(numLightHints);
+            }
+
+            // Algorithm based on best row so far
             setCurrentHint([0,0,0,0]);
 
-            let newCpuGuess = [
-                Math.floor(Math.random()*6)+1,
-                Math.floor(Math.random()*6)+1,
-                Math.floor(Math.random()*6)+1,
-                Math.floor(Math.random()*6)+1,
-            ];
+            let newCpuGuess = [0,0,0,0];
+            let keepIndex = 0;
 
+            // Choose code pegs to keep based on dark pegs
+            for (let i = 0; i < bestDarkHints; i++) {
+                keepIndex = Math.floor(Math.random()*4);
+                // In case of rolling same index twice (should avoid infinite loops since game stops at 4 dark pegs)
+                while (newCpuGuess[keepIndex] !== 0) {
+                    keepIndex = Math.floor(Math.random()*4);
+                }
+                newCpuGuess[keepIndex] = bestCpuGuess[keepIndex];
+            }
+
+            let keepColor = 0;
+
+            // Choose random color to save and move it to a new spot
+            for (let i = 0; i < bestLightHints; i++) {
+                keepColor = bestCpuGuess[Math.floor(Math.random()*4)];
+
+                // Pick position to put in
+                keepIndex = Math.floor(Math.random()*4);
+                // Only in zero indexes in current guess (should avoid infinite loops since game stops at 4 dark pegs)
+                while (newCpuGuess[keepIndex] !== 0) {
+                    keepIndex = Math.floor(Math.random()*4);
+                }
+                newCpuGuess[keepIndex] = keepColor;
+            }
+
+            // For rest of 0's, pick a random color
+            // 10% chance to re-roll and get correct answer for this spot
+            let limit = 2;
+
+            // +5% chance for every dark peg from last turn
+            limit = limit + numDarkHints;
+
+            // +5% chance for every 2 light pegs from last turn
+            limit = limit + (numLightHints % 2);
+
+            for (let i = 0; i < 4; i++) {
+                if (newCpuGuess[i] === 0) {
+                    newCpuGuess[i] = Math.floor(Math.random()*6)+1;
+                }
+                if (Math.floor(Math.random()*20)+1 <= limit) {
+                    newCpuGuess[i] = answer[i];
+                }
+            }
+
+            // Make sure it's not a repeat of the best row. Just change a random index.
+            while (checkEqual(newCpuGuess, bestCpuGuess)) {
+                newCpuGuess[Math.floor(Math.random()*4)] = Math.floor(Math.random()*6)+1;
+            }
+
+            // Update cpuGuess and normal game current guess
+            setCpuGuess(newCpuGuess);
             setCurrentGuess(newCpuGuess);
 
             setGameRows(prev => [...prev, <MMRow 
@@ -163,14 +266,6 @@ const MMGame = (props) => {
         return expectedHint;
     }
 
-    // Helper function to check if two arrays are equal
-    const checkEqual = (arr1, arr2) => {
-        return Array.isArray(arr1) &&
-        Array.isArray(arr2) &&
-        arr1.length === arr2.length &&
-        arr1.every((val, index) => val === arr2[index]);
-    }
-
     const nextPhase = () => {
 
         // 0 - Codemaker sets code, 1 - Hacker guesses, 2 - Codemaker rates
@@ -180,12 +275,26 @@ const MMGame = (props) => {
 
             // Handle Codemaker AI
             if (cpuMode && p2Role === 'Codemaker') {
-                setAnswer([
+                let newAnswer = [
                     Math.floor(Math.random()*6)+1,
                     Math.floor(Math.random()*6)+1,
                     Math.floor(Math.random()*6)+1,
                     Math.floor(Math.random()*6)+1,
-                ])
+                ];
+
+                // No duplicate colors if dupe mode is false. Keep generating
+                if (!dupeMode) {
+                    while (checkDupes(newAnswer)) {
+                        newAnswer = [
+                            Math.floor(Math.random()*6)+1,
+                            Math.floor(Math.random()*6)+1,
+                            Math.floor(Math.random()*6)+1,
+                            Math.floor(Math.random()*6)+1,
+                        ];
+                    }
+                }
+
+                setAnswer(newAnswer);
             }
 
             // Player Codemaker error checks
@@ -194,7 +303,15 @@ const MMGame = (props) => {
                 if (answer.includes(0)) {
                     Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
                     return
-                }    
+                }
+
+                // Check for dupes, if dupe mode is off
+                if (!dupeMode) {
+                    if (checkDupes(answer)) {
+                        Alert.alert("Invalid Code", "Your code has duplicate colors, which was set to off.", [{text: "OK", style: "cancel"}]);
+                        return
+                    }
+                }
             }
             
             setShowAnswer(false);
@@ -210,11 +327,11 @@ const MMGame = (props) => {
                 if (currentGuess.includes(0)) {
                     Alert.alert("Invalid Code", "Please make sure there is a peg in each spot.", [{text: "OK", style: "cancel"}]);
                     return
-                }    
+                }
             }
 
             // HANDLE COMPUTER MODE
-            // Set up Codemaker AI to generate guess for next phase
+            // Set up Codemaker AI to generate hint for next phase
             if (cpuMode && p2Role === 'Codemaker') {
 
                 // Generate guess
@@ -327,6 +444,13 @@ const MMGame = (props) => {
         setAnswer([0,0,0,0]);
         setCurrentGuess([0,0,0,0]);
         setCurrentHint([0,0,0,0]);
+
+        // AI States
+        setCpuGuess([0,0,0,0]);
+        setBestCpuGuess([0,0,0,0]);
+        setBestCpuHintRating(0);
+        setBestDarkHints(0);
+        setBestLightHints(0);
 
         setGameOver(false);
     }

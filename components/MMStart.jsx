@@ -17,7 +17,7 @@ const MMStart = (props) => {
             cpuMode = true;
         }
 
-        props.onStart(p1Role, cpuMode);
+        props.onStart(p1Role, cpuMode, dupes);
     }
 
     return (
