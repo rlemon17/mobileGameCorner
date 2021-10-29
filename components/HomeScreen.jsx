@@ -27,7 +27,7 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => {
                         setRoute('TicTacToe')
                         setSelected(1)
-                        setGameInfo('Get three in a row before your opponent does! (2 players or 1 player VS a computer)')
+                        setGameInfo('Get three in a row before your opponent does! (2 players)')
                     }}
                 >
                     <Text style={styles.buttonText}>Tic Tac Toe</Text>
@@ -38,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => {
                         setRoute('Mastermind')
                         setSelected(2)
-                        setGameInfo('Crack the password the codemaker makes, or be the codemaker yourself! (2 players or 1 player VS a computer)')
+                        setGameInfo('Crack the password the codemaker makes, or be the codemaker yourself! (2 players)')
                     }}
                 >
                     <Text style={styles.buttonText}>Mastermind</Text>
@@ -47,12 +47,12 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity 
                     style={[styles.button, selected === 3 && styles.buttonSelected]}
                     onPress={() => {
-                        setRoute('TicTacToe')
+                        setRoute('VideoPoker')
                         setSelected(3)
-                        setGameInfo('Sit amet mauris commodo quis imperdiet massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
+                        setGameInfo('Try to get the best hand of 5 cards from a deck! (1 player)')
                     }}
                 >
-                    <Text style={styles.buttonText}>Some Game 3</Text>
+                    <Text style={styles.buttonText}>Video Poker</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -63,7 +63,7 @@ const HomeScreen = ({ navigation }) => {
                         setGameInfo('Enim sit amet venenatis urna cursus eget nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
                     }}
                 >
-                    <Text style={styles.buttonText}>Some Game 4</Text>
+                    <Text style={styles.buttonText}>Coming Soon</Text>
                 </TouchableOpacity>
 
             </View>

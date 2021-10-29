@@ -8,6 +8,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import HomeScreen from './components/HomeScreen';
 import TicTacToe from './components/TicTacToe';
 import Mastermind from './components/Mastermind';
+import VideoPoker from './components/VideoPoker';
 import Colors from './components/Colors';
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +33,7 @@ function App() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="TicTacToe" component={TicTacToe}/>
             <Stack.Screen name="Mastermind" component={Mastermind}/>
+            <Stack.Screen name="VideoPoker" component={VideoPoker}/>
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
