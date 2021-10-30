@@ -12,6 +12,10 @@ const VPStart = (props) => {
         setMoney(text);
     }
 
+    const handleStart = () => {
+        props.handleStart(money);
+    }
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
             <View style={styles.wholeContainer}>
@@ -34,6 +38,7 @@ const VPStart = (props) => {
 
                     <TouchableOpacity 
                         style={styles.button}
+                        onPress={handleStart}
                     >
                         <Text style={styles.buttonText}>Start</Text>
                     </TouchableOpacity>    
