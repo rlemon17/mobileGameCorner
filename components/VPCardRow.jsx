@@ -21,11 +21,51 @@ const VPCardRow = (props) => {
 
     return (
         <View style={styles.cardRow}>
-            <VPCard id={0} rank={ranks[props.handArr[0]%13]} suit={suits[props.handArr[0]%4]} isRed={(props.handArr[0]%4) > 1} changeHeldCard={changeHeldCard} />
-            <VPCard id={1} rank={ranks[props.handArr[1]%13]} suit={suits[props.handArr[1]%4]} isRed={(props.handArr[1]%4) > 1} changeHeldCard={changeHeldCard} /> 
-            <VPCard id={2} rank={ranks[props.handArr[2]%13]} suit={suits[props.handArr[2]%4]} isRed={(props.handArr[2]%4) > 1} changeHeldCard={changeHeldCard} /> 
-            <VPCard id={3} rank={ranks[props.handArr[3]%13]} suit={suits[props.handArr[3]%4]} isRed={(props.handArr[3]%4) > 1} changeHeldCard={changeHeldCard} /> 
-            <VPCard id={4} rank={ranks[props.handArr[4]%13]} suit={suits[props.handArr[4]%4]} isRed={(props.handArr[4]%4) > 1} changeHeldCard={changeHeldCard} /> 
+            <VPCard 
+                id={0} 
+                rank={ranks[props.handArr[0]%13]} 
+                suit={suits[props.handArr[0]%4]} 
+                isRed={(props.handArr[0]%4) > 1} 
+                changeHeldCard={changeHeldCard}
+                phase={props.phase} 
+                held={props.heldCards[0]}
+            />
+            <VPCard 
+                id={1} 
+                rank={ranks[props.handArr[1]%13]} 
+                suit={suits[props.handArr[1]%4]} 
+                isRed={(props.handArr[1]%4) > 1} 
+                changeHeldCard={changeHeldCard} 
+                phase={props.phase} 
+                held={props.heldCards[1]}
+            /> 
+            <VPCard 
+                id={2} 
+                rank={ranks[props.handArr[2]%13]} 
+                suit={suits[props.handArr[2]%4]} 
+                isRed={(props.handArr[2]%4) > 1} 
+                changeHeldCard={changeHeldCard} 
+                phase={props.phase} 
+                held={props.heldCards[2]}
+            /> 
+            <VPCard 
+                id={3} 
+                rank={ranks[props.handArr[3]%13]} 
+                suit={suits[props.handArr[3]%4]} 
+                isRed={(props.handArr[3]%4) > 1} 
+                changeHeldCard={changeHeldCard} 
+                phase={props.phase} 
+                held={props.heldCards[3]}
+            /> 
+            <VPCard 
+                id={4} 
+                rank={ranks[props.handArr[4]%13]} 
+                suit={suits[props.handArr[4]%4]} 
+                isRed={(props.handArr[4]%4) > 1} 
+                changeHeldCard={changeHeldCard} 
+                phase={props.phase} 
+                held={props.heldCards[4]}
+            /> 
         </View>
     )
 }

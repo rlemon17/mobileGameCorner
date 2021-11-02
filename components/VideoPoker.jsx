@@ -9,9 +9,10 @@ import VPGame from './VPGame'
 const VideoPoker = () => {
 
     const [gameMode, setGameMode] = useState(0);
-    const [money, setMoney] = useState(0.00);
+    const [money, setMoney] = useState(10.00);
 
-    const handleModeZero = () => {
+    const handleModeZero = (cashoutMoney) => {
+        setMoney(cashoutMoney);
         setGameMode(0);
     }
 
@@ -23,8 +24,8 @@ const VideoPoker = () => {
 
     return (
         <View style={styles.wholeContainer}>
-            {gameMode === 0 && <VPStart handleStart={handleModeOne} />}
-            {gameMode === 1 && <VPGame money={money} />}
+            {gameMode === 0 && <VPStart money={money} handleStart={handleModeOne} />}
+            {gameMode === 1 && <VPGame money={money} handleCashout={handleModeZero} />}
         </View>
     );
 }

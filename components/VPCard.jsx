@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 import Colors from './Colors';
 
 const VPCard = (props) => {
 
-    const [held, setHeld] = useState(false);
+    const held = props.held;
 
     const handleHold = () => {
-        setHeld(prev => !prev);
         props.changeHeldCard(props.id);
     }
 
@@ -23,7 +22,6 @@ const VPCard = (props) => {
                 />
             </View>    
         </TouchableOpacity>
-        
     )
 }
 

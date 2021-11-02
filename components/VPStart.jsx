@@ -6,7 +6,7 @@ import Colors from './Colors';
 
 const VPStart = (props) => {
 
-    const [money, setMoney] = useState('');
+    const [money, setMoney] = useState(props.money.toFixed(2).toString());
 
     const handleChange = (text) => {
         setMoney(text);
