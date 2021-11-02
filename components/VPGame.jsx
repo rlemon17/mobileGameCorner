@@ -25,7 +25,7 @@ const VPGame = (props) => {
     ]);
 
     var winCredit = 0;
-    const creditCost = 0.25; // Make toggleable in settings?
+    const creditCost = parseFloat(props.creditCost.toFixed(2));
     const jackpot = 800;
     const royalFlush = 250;
     const straightFlush = 50;
@@ -55,11 +55,17 @@ const VPGame = (props) => {
         if (bet >= 5) {
             return;
         }
+
+        // Other Max is if not enough credits
+        if ((bet+1)*creditCost > money) {
+            return;
+        }
+
         setBet(prev => prev + 1);
     }
 
     const betDown = () => {
-        if (phase === 1) {
+        if (phase === 1 || prizeMoneyString === 'Game Over!') {
             return;
         }
 
@@ -83,7 +89,7 @@ const VPGame = (props) => {
     const convertToRanks = (handArr) => {
         let rankArray = [];
         handArr.forEach(num => rankArray.push(getRank(num)));
-        return rankArray.sort();
+        return rankArray.sort((a, b) => a-b);
     };
 
     // Converts entire array to just their suits, and sorts it
@@ -217,6 +223,8 @@ const VPGame = (props) => {
 
     // Checks hand for a winning hand
     const checkHand = (handArr) => {
+        setMessage('Try Again!');
+
         let rankArray = convertToRanks(handArr);
         let suitArray = convertToSuits(handArr);
 
@@ -250,19 +258,25 @@ const VPGame = (props) => {
             }
             else {
                 winCredit = straightFlush;
-                setMessage('Straight Flush');
+                setMessage('Straight Flush!');
             }
         }
 
         if (phase === 1) {
             setMoney(prev => prev + (bet*creditCost*winCredit));
             if (winCredit > 0) {
-                setWinString(`Won! ${creditCost} X ${bet} X ${winCredit} = `);
+                setWinString(`Won! $${creditCost} x ${bet} x ${winCredit} = `);
                 setPrizeMoneyString(`+$${(bet*creditCost*winCredit).toFixed(2)}`);    
             }
             else {
                 setWinString('');
-                setPrizeMoneyString('');
+                // Check for game over
+                if (money < creditCost) {
+                    setPrizeMoneyString('Game Over!')
+                }
+                else {
+                    setPrizeMoneyString('');    
+                }
             }
         }
         
@@ -270,6 +284,12 @@ const VPGame = (props) => {
 
     // Also used to change game phases
     const dealCards = () => {
+
+        // Game Over
+        if (prizeMoneyString === 'Game Over!') {
+            return;
+        }
+
         // Generate 5 random cards, make sure no repeats
         let newHand = [];
         let usedCards = [];
@@ -325,6 +345,13 @@ const VPGame = (props) => {
         // 2 (second deal, results, set up next bet) ===> 1 (first deal)
         else if (phase === 2) {
             winCredit = 0;
+            let nextBet = bet;
+
+            // Check if need to lower bet when almost out of credits
+            while ((nextBet*creditCost) > money) {
+                nextBet--;
+            }
+
             setHeldCards([
                 false,
                 false,
@@ -332,7 +359,8 @@ const VPGame = (props) => {
                 false,
                 false
             ]);
-            setMoney(prev => prev - (bet*creditCost));
+            setBet(nextBet);
+            setMoney(prev => prev - (nextBet*creditCost));
             setMessage('Try Again!');
             setPhase(1);
         }
@@ -396,7 +424,7 @@ const VPGame = (props) => {
                 <View style={styles.infoContainer}>
                     <View style={styles.infoSubContainer}>
                         <Text style={styles.infoText}>BET:</Text>
-                        <Text style={styles.infoText2}>{bet}</Text>
+                        <Text style={styles.infoText2}>${(bet*creditCost).toFixed(2)}</Text>
                     </View>
 
                     <View style={styles.infoSubContainer}>
@@ -415,15 +443,15 @@ const VPGame = (props) => {
                         <Text style={styles.buttonText}>Cashout</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.button, phase === 1 && styles.buttonInactive]} onPress={betDown}>
+                    <TouchableOpacity style={[styles.button, (phase === 1 || bet === 1 || prizeMoneyString === 'Game Over!') && styles.buttonInactive]} onPress={betDown}>
                         <Text style={styles.buttonText}>Bet -1</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.button, phase === 1 && styles.buttonInactive]} onPress={betUp}>
+                    <TouchableOpacity style={[styles.button, (phase === 1 || (bet+1)*creditCost > money) && styles.buttonInactive]} onPress={betUp}>
                         <Text style={styles.buttonText}>Bet +1</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button} onPress={dealCards}>
+                    <TouchableOpacity style={[styles.button, prizeMoneyString === 'Game Over!' && styles.buttonInactive]} onPress={dealCards}>
                         <Text style={styles.buttonText}>Deal/Draw</Text>
                     </TouchableOpacity>
 

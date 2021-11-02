@@ -1,19 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 import { Title, Card } from 'react-native-paper';
 
 import Colors from './Colors';
 
 const VPStart = (props) => {
 
-    const [money, setMoney] = useState(props.money.toFixed(2).toString());
+    const [money, setMoney] = useState(props.money.toFixed(2));
+    const [creditCost, setCreditCost] = useState('0.25');
 
     const handleChange = (text) => {
         setMoney(text);
     }
 
+    const handleChangeCredit = (text) => {
+        setCreditCost(text);
+    }
+
     const handleStart = () => {
-        props.handleStart(money);
+        if (parseFloat(money).toFixed(2) <= 0 || 
+            parseFloat(creditCost).toFixed(2) <= 0 || 
+            money === '' || 
+            creditCost === '' ||
+            isNaN(parseFloat(money)) ||
+            isNaN(parseFloat(creditCost))) {
+            Alert.alert("Invalid Input", "Please make all values are non-zero, positive dollar values.", [{text: "OK", style: "cancel"}]);
+            return;
+        }
+
+        if (parseFloat(parseFloat(money).toFixed(2)) < parseFloat(parseFloat(creditCost).toFixed(2))) {
+            Alert.alert("Insufficient Funds", "You won't be able to play given those values.", [{text: "OK", style: "cancel"}]);
+            return;
+        }
+
+        props.handleStart(money, creditCost);
     }
 
     return (
@@ -25,7 +45,6 @@ const VPStart = (props) => {
                 <View style={styles.settingsContainer}>
 
                     <Text>Insert starting money below:</Text>
-
                     <View style={styles.rowContainer}>
                         <Text style={styles.inputText}>$</Text>
                         <TextInput
@@ -33,6 +52,17 @@ const VPStart = (props) => {
                             keyboardType='numeric'
                             value={money}
                             onChangeText={handleChange}
+                        />
+                    </View>
+
+                    <Text>Determine cost per credit:</Text>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.inputText}>$</Text>
+                        <TextInput
+                            style={styles.input} 
+                            keyboardType='numeric'
+                            value={creditCost}
+                            onChangeText={handleChangeCredit}
                         />
                     </View>
 
@@ -59,7 +89,8 @@ const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        alignContent: 'center'
+        alignContent: 'center',
+        marginBottom: 20
     },
     input: {
         height: 60,
