@@ -9,6 +9,7 @@ import HomeScreen from './components/HomeScreen';
 import TicTacToe from './components/TicTacToe';
 import Mastermind from './components/Mastermind';
 import VideoPoker from './components/VideoPoker';
+import BattleSimulator from './components/BattleSimulator';
 import Colors from './components/Colors';
 
 const Stack = createNativeStackNavigator();
@@ -34,6 +35,7 @@ function App() {
             <Stack.Screen name="TicTacToe" component={TicTacToe}/>
             <Stack.Screen name="Mastermind" component={Mastermind}/>
             <Stack.Screen name="VideoPoker" component={VideoPoker}/>
+            <Stack.Screen name="BattleSimulator" component={BattleSimulator}/>
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

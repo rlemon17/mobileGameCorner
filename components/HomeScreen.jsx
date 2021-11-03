@@ -27,7 +27,7 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => {
                         setRoute('TicTacToe')
                         setSelected(1)
-                        setGameInfo('Get three in a row before your opponent does! (2 players)')
+                        setGameInfo('Get three in a row before your opponent does! (1-2 players)')
                     }}
                 >
                     <Text style={styles.buttonText}>Tic Tac Toe</Text>
@@ -38,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
                     onPress={() => {
                         setRoute('Mastermind')
                         setSelected(2)
-                        setGameInfo('Crack the password the codemaker makes, or be the codemaker yourself! (2 players)')
+                        setGameInfo('Crack the password the codemaker makes, or be the codemaker yourself! (1-2 players)')
                     }}
                 >
                     <Text style={styles.buttonText}>Mastermind</Text>
@@ -58,12 +58,12 @@ const HomeScreen = ({ navigation }) => {
                 <TouchableOpacity 
                     style={[styles.button, selected === 4 && styles.buttonSelected]}
                     onPress={() => {
-                        setRoute('TicTacToe')
+                        setRoute('BattleSimulator')
                         setSelected(4)
-                        setGameInfo('Enim sit amet venenatis urna cursus eget nunc. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
+                        setGameInfo('Play a 2v2 turn-based battle simulator, choosing between various characters! (1-4 players)')
                     }}
                 >
-                    <Text style={styles.buttonText}>Coming Soon</Text>
+                    <Text style={styles.buttonText}>Battle Simulator</Text>
                 </TouchableOpacity>
 
             </View>
