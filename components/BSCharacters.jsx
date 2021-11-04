@@ -1,11 +1,130 @@
 export default {
-    slime: {
-        sprite: 'https://art.pixilart.com/c977a761f7c9a8c.png'
+    random: {
+        name: 'Random',
+        sprite: 'http://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.com/image/ef680c30a573972.png',
+        animated: 'http://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.com/image/ef680c30a573972.png',
+        hp: 0,
+        atk: 0,
+        def: 0,
+        spd: 0,
+        mana: 0,
+        moves: [
+            {
+                name: '?',
+                manaCost: 0,
+                desc: '?'
+            },
+            {
+                name: '?',
+                manaCost: 0,
+                desc: '?'
+            },
+            {
+                name: '?',
+                manaCost: 0,
+                desc: '?'
+            },
+            {
+                name: '?',
+                manaCost: 0,
+                desc: '?'
+            },
+        ]
     },
-    waterSlime: {
-        sprite: 'https://art.pixilart.com/a452dacb6c23b13.png'
+    slime: {
+        name: 'Slime',
+        sprite: 'https://art.pixilart.com/f2ca24abf34a000.png',
+        animated: 'https://art.pixilart.com/f2ca24abf34a000.gif',
+        hp: 50,
+        atk: 8,
+        def: 2,
+        spd: 10,
+        mana: 15,
+        moves: [
+            {
+                name: 'Tackle',
+                manaCost: 0,
+                desc: 'Single-target, damaging attack'
+            },
+            {
+                name: 'Slime Drench',
+                manaCost: 8,
+                desc: 'Covers both targets in slime, lowering their Speed by 6 for 2 turns'
+            },
+            {
+                name: 'Acid',
+                manaCost: 5,
+                desc: 'Multi-target, damaging attack.'
+            },
+            {
+                name: 'ULT: Toxic Acid',
+                manaCost: 10,
+                desc: 'Multi-target, damaging attack. Also inflicts poison on both opponents.'
+            },
+        ]
     },
     fireSlime: {
-        sprite: 'https://art.pixilart.com/a28b1a81ab981cb.png'
+        name: 'Fire Slime',
+        sprite: 'https://art.pixilart.com/0d8fe77a00189d9.png',
+        animated: 'https://art.pixilart.com/0d8fe77a00189d9.gif',
+        hp: 40,
+        atk: 10,
+        def: 1,
+        spd: 15,
+        mana: 12,
+        moves: [
+            {
+                name: 'Ember',
+                manaCost: 0,
+                desc: 'Single-target, basic attack'
+            },
+            {
+                name: 'Lava Snipe',
+                manaCost: 7,
+                desc: 'Single-target attack that pierces defense. 40% chance of inflicting burn.'
+            },
+            {
+                name: 'Heat Up',
+                manaCost: 4,
+                desc: 'Raises own Attack by 2 for the next turn.'
+            },
+            {
+                name: 'ULT: Eruption',
+                manaCost: 7,
+                desc: 'Multi-target attack. 70% of inflicting burn on opponents.'
+            },
+        ]
+    },
+    waterSlime: {
+        name: 'Water Slime',
+        sprite: 'https://art.pixilart.com/dcb8947fe22c0fe.png',
+        animated: 'https://art.pixilart.com/dcb8947fe22c0fe.gif',
+        hp: 60,
+        atk: 6,
+        def: 4,
+        spd: 5,
+        mana: 20,
+        moves: [
+            {
+                name: 'Water Gun',
+                manaCost: 0,
+                desc: 'Single-target, basic attack'
+            },
+            {
+                name: 'Healing Rain',
+                manaCost: 5,
+                desc: 'Heals target by 5 HP.'
+            },
+            {
+                name: 'Purifying Pulse',
+                manaCost: 10,
+                desc: 'Boost all allies Defense by 1 for 2 turns, cures all status effects.'
+            },
+            {
+                name: 'ULT: Water Surge',
+                manaCost: 10,
+                desc: 'Multi-target attack. Also heals all allies by 3 HP.'
+            },
+        ]
     }
 }
