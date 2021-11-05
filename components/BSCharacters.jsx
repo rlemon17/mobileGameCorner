@@ -33,8 +33,8 @@ export default {
     },
     slime: {
         name: 'Slime',
-        sprite: 'https://art.pixilart.com/f2ca24abf34a000.png',
-        animated: 'https://art.pixilart.com/f2ca24abf34a000.gif',
+        sprite: 'https://art.pixilart.com/25c3a5ea799affd.png',
+        animated: 'https://art.pixilart.com/25c3a5ea799affd.gif',
         hp: 50,
         atk: 8,
         def: 2,
@@ -65,8 +65,8 @@ export default {
     },
     fireSlime: {
         name: 'Fire Slime',
-        sprite: 'https://art.pixilart.com/0d8fe77a00189d9.png',
-        animated: 'https://art.pixilart.com/0d8fe77a00189d9.gif',
+        sprite: 'https://art.pixilart.com/cb68e616ccb9327.png',
+        animated: 'https://art.pixilart.com/cb68e616ccb9327.gif',
         hp: 40,
         atk: 10,
         def: 1,
@@ -86,7 +86,7 @@ export default {
             {
                 name: 'Heat Up',
                 manaCost: 4,
-                desc: 'Raises own Attack by 2 for the next turn.'
+                desc: 'Raises own Attack by 3 for the next turn.'
             },
             {
                 name: 'ULT: Eruption',
@@ -97,8 +97,8 @@ export default {
     },
     waterSlime: {
         name: 'Water Slime',
-        sprite: 'https://art.pixilart.com/dcb8947fe22c0fe.png',
-        animated: 'https://art.pixilart.com/dcb8947fe22c0fe.gif',
+        sprite: 'https://art.pixilart.com/10696e5ca60470f.png',
+        animated: 'https://art.pixilart.com/10696e5ca60470f.gif',
         hp: 60,
         atk: 6,
         def: 4,
