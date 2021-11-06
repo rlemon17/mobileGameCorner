@@ -9,20 +9,35 @@ const BSMoveMenu = (props) => {
 
     const user = props.currentUser;
 
-    const onChoose = (moveName) => {
+    const onChoose = (moveName, manaCost) => {
+        // Do nothing if not enough mana
+        if (user.curMANA < manaCost) {
+            return;
+        }
+        // If ULT, also do nothing if above 40% HP
+        if (moveName === user.character.moves[3].name && user.curHP > user.character.hp*0.4) {
+            return;
+        }
+
         props.onChoose(moveName);
     }
 
     return (
         <View style={styles.controls}>
             <View style={styles.moveRow}>
-                <TouchableOpacity style={styles.move1} onPress={() => onChoose(user.character.moves[0].name)}>
+                <TouchableOpacity 
+                    style={styles.move} 
+                    onPress={() => onChoose(user.character.moves[0].name, user.character.moves[0].manaCost)}
+                >
                     <Text style={styles.moveName}>{user.character.moves[0].name}</Text>
                     <Text style={styles.moveMana}>{user.character.moves[0].manaCost} mana</Text>
                     <Text style={styles.moveDesc}>{user.character.moves[0].desc}</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.move2} onPress={() => onChoose(user.character.moves[1].name)}>
+                <TouchableOpacity 
+                    style={[styles.move, user.curMANA < user.character.moves[1].manaCost && styles.unusable]} 
+                    onPress={() => onChoose(user.character.moves[1].name, user.character.moves[1].manaCost)}
+                >
                     <Text style={styles.moveName}>{user.character.moves[1].name}</Text>
                     <Text style={styles.moveMana}>{user.character.moves[1].manaCost} mana</Text>
                     <Text style={styles.moveDesc}>{user.character.moves[1].desc}</Text>
@@ -30,13 +45,19 @@ const BSMoveMenu = (props) => {
             </View>
 
             <View style={styles.moveRow}>
-                <TouchableOpacity style={styles.move3} onPress={() => onChoose(user.character.moves[2].name)}>
+                <TouchableOpacity 
+                    style={[styles.move, user.curMANA < user.character.moves[2].manaCost && styles.unusable]} 
+                    onPress={() => onChoose(user.character.moves[2].name, user.character.moves[2].manaCost)}
+                >
                     <Text style={styles.moveName}>{user.character.moves[2].name}</Text>
                     <Text style={styles.moveMana}>{user.character.moves[2].manaCost} mana</Text>
                     <Text style={styles.moveDesc}>{user.character.moves[2].desc}</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.move4} onPress={() => onChoose(user.character.moves[3].name)}>
+                <TouchableOpacity 
+                    style={[styles.move, (user.curMANA < user.character.moves[3].manaCost || user.curHP > user.character.hp*0.4) && styles.unusable]} 
+                    onPress={() => onChoose(user.character.moves[3].name, user.character.moves[3].manaCost)}
+                >
                     <Text style={styles.moveName}>{user.character.moves[3].name}</Text>
                     <Text style={styles.moveMana}>{`Usable at < ${Math.floor(user.character.hp*0.4)} HP`}</Text>
                     <Text style={styles.moveMana}>{user.character.moves[3].manaCost} mana</Text>
@@ -56,44 +77,42 @@ const styles = StyleSheet.create({
     },
     moveRow: {
         flexDirection: 'row',
-        flex: 1
-    },
-    move1: {
         flex: 1,
-        borderRightWidth: 2,
-        borderBottomWidth: 2,
-        borderColor: Colors.primary,
+        justifyContent: 'center',
         alignItems: 'center'
     },
-    move2: {
-        flex: 1,
-        borderBottomWidth: 2,
-        borderColor: Colors.primary,
-        alignItems: 'center'
+    move: {
+        padding: 5,
+        marginHorizontal: 5,
+        marginTop: 5,
+        marginBottom: 10,
+        width: 160,
+        height: 90,
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffffff',
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2
     },
-    move3: {
-        flex: 1,
-        borderRightWidth: 2,
-        borderColor: Colors.primary,
-        alignItems: 'center'
-    },
-    move4: {
-        flex: 1,
-        alignItems: 'center'
+    unusable: {
+        backgroundColor: '#dddddd'
     },
     moveName: {
         fontWeight: 'bold',
-        fontSize: 16,
-        paddingTop: 10
+        fontSize: 14,
+        paddingTop: 5
     },
     moveMana: {
         fontStyle: 'italic',
         color: Colors.accent,
-        fontSize: 10
+        fontSize: 8
     },
     moveDesc: {
         color: Colors.primary,
-        fontSize: 10,
+        fontSize: 8,
         padding: 5
     }
 })

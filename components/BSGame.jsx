@@ -60,16 +60,16 @@ const BSGame = (props) => {
     const [phase, setPhase] = useState('1A');
     const [currentUser, setCurrentUser] = useState(p1);
 
-    const [p1Targets, setP1Targets] = useState('');
+    const [p1Target, setP1Target] = useState('');
     const [p1Attack, setP1Attack] = useState('');
 
-    const [p2Targets, setP2Targets] = useState('');
+    const [p2Target, setP2Target] = useState('');
     const [p2Attack, setP2Attack] = useState('');
 
-    const [p3Targets, setP3Targets] = useState('');
+    const [p3Target, setP3Target] = useState('');
     const [p3Attack, setP3Attack] = useState('');
 
-    const [p4Targets, setP4Targets] = useState('');
+    const [p4Target, setP4Target] = useState('');
     const [p4Attack, setP4Attack] = useState('');
 
     // Returns how much damage should be dealt
@@ -86,7 +86,75 @@ const BSGame = (props) => {
         return(Math.floor(Math.random()*(diff))+1);
     }
 
-    // Change's the user's current HP by the value given
+    // Changes the user's current MANA by the value given
+    // Negative numbers for value parameter imply regenerating
+    const changeMANA = (userData, value) => {
+        let newValue = 0;
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1(prevState => {
+                newValue = prevState.curMANA - value;
+                if (newValue <= 0) {
+                    newValue = 0;
+                }
+                if (newValue > prevState.character.mana) {
+                    newValue = prevState.character.mana;
+                }
+                return {
+                    ...prevState,
+                    curMANA: newValue
+                }
+            });
+        }
+        else if (userData.id === 2) {
+            setP2(prevState => {
+                newValue = prevState.curMANA - value;
+                if (newValue <= 0) {
+                    newValue = 0;
+                }
+                if (newValue > prevState.character.mana) {
+                    newValue = prevState.character.mana;
+                }
+                return {
+                    ...prevState,
+                    curMANA: newValue
+                }
+            });
+        }
+        else if (userData.id === 3) {
+            setP3(prevState => {
+                newValue = prevState.curMANA - value;
+                if (newValue <= 0) {
+                    newValue = 0;
+                }
+                if (newValue > prevState.character.mana) {
+                    newValue = prevState.character.mana;
+                }
+                return {
+                    ...prevState,
+                    curMANA: newValue
+                }
+            });
+        }
+        else {
+            setP4(prevState => {
+                newValue = prevState.curMANA - value;
+                if (newValue <= 0) {
+                    newValue = 0;
+                }
+                if (newValue > prevState.character.mana) {
+                    newValue = prevState.character.mana;
+                }
+                return {
+                    ...prevState,
+                    curMANA: newValue
+                }
+            });
+        }
+    }
+
+    // Changes the user's current HP by the value given
     // Negative numbers for value parameter imply healing
     const changeHP = (userData, value) => {
         let newValue = 0;
@@ -163,6 +231,163 @@ const BSGame = (props) => {
         }
     };
 
+    // ================================================================================
+    // ============================= Master Move Function =============================
+    // ================================================================================ 
+    // Change target's HP, attacker's mana, inflict any statuses
+    const useMove = (attackerData, targetData, moveName) => {
+
+        setMessage(`${attackerData.character.name} used ${moveName}!`)
+        let damage = 0;
+
+        // Handle all basic Attacks
+        if (moveName === 'Tackle' || moveName === 'Ember' || moveName === 'Water Gun') {
+            damage = getDamage(attackerData, targetData);
+            changeHP(targetData, damage);
+            setSubMessage(`${targetData.character.name} took ${damage} damage`);
+            return;
+        }
+
+        // For multi-target attacks
+        let foe1 = p3;
+        let foe2 = p4;
+        let damage2 = 0;
+
+        if (attackerData.id === 3 || attackerData.id === 4) {
+            foe1 = p1;
+            foe2 = p2;
+        }
+
+        // Handle rest of the moves by character
+        // ============================== Slime ==============================
+        if (attackerData.character.name === 'Slime') {
+            // Slime Drench
+            if (moveName === 'Slime Drench') {
+                setSubMessage(`${foe1.character.name} and ${foe2.character.name} will be slowed for the next 2 turns!`);
+                changeMANA(attackerData, attackerData.character.moves[1].manaCost);
+                return;
+            }
+            // Acid
+            else if (moveName === 'Acid') {
+                damage = getDamage(attackerData, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerData, foe2);
+                changeHP(foe2, damage2);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
+                changeMANA(attackerData, attackerData.character.moves[2].manaCost);
+                return;
+            }
+            // ULT: Toxic Acid
+            else {
+                damage = getDamage(attackerData, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerData, foe2);
+                changeHP(foe2, damage2);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage and was poisoned, ${foe2.character.name} took ${damage2} damage and was poisoned`)
+                changeMANA(attackerData, attackerData.character.moves[3].manaCost);
+                return;
+            }
+        }
+        // ============================== Fire Slime ==============================
+        else if (attackerData.character.name === 'Fire Slime') {
+            // Lava Snipe
+            if (moveName === 'Lava Snipe') {
+                damage = getDamage(attackerData, {curDEF: 0});
+                changeHP(targetData, damage);
+
+                setSubMessage(`${targetData.character.name} took ${damage} damage`);
+                changeMANA(attackerData, attackerData.character.moves[1].manaCost);
+                return;
+            }
+            // Heat Up
+            else if (moveName === 'Heat Up') {
+                setSubMessage(`${attackerData.character.name}'s Attack increases for the next turn`);
+                changeMANA(attackerData, attackerData.character.moves[2].manaCost);
+                return;
+            }
+            // ULT: Eruption
+            else {
+                damage = getDamage(attackerData, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerData, foe2);
+                changeHP(foe2, damage2);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
+                changeMANA(attackerData, attackerData.character.moves[3].manaCost);
+                return;
+            }
+        }
+        // ============================== Water Slime ==============================
+        else if (attackerData.character.name === 'Water Slime') {
+            // Healing Rain
+            if (moveName === 'Healing Rain') {
+                changeHP(targetData, -5);
+
+                setSubMessage(`${targetData.character.name} healed 5 HP`);
+                changeMANA(attackerData, attackerData.character.moves[1].manaCost);
+                return;
+            }
+            // Purifying Pulse
+            else if (moveName === 'Purifying Pulse') {
+                setSubMessage(`${attackerData.character.name} and ally's Defense increases for 2 turns, any statuses are healed.`)
+                changeMANA(attackerData, attackerData.character.moves[2].manaCost);
+                return;
+            }
+            // ULT: Water Surge
+            else {
+                let ally1 = p1;
+                let ally2 = p2;
+
+                if (attackerData.id === 3 || attackerData.id === 4) {
+                    ally1 = p3;
+                    ally2 = p4;
+                }
+
+                damage = getDamage(attackerData, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerData, foe2);
+                changeHP(foe2, damage2);
+
+                changeHP(ally1, -3);
+                changeHP(ally2, -3);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage, 
+                    ${ally1.character.name} and ${ally2.character.name} healed 3 HP`);
+                changeMANA(attackerData, attackerData.character.moves[3].manaCost);
+                return;
+            }
+        }
+    }
+
+    // Goes back one phase. To only be used in target selection phase
+    const goBackPhase = () => {
+        if (phase === '1B') {
+            setMessage('P1, select your move');
+            setPhase('1A');
+        }
+        else if (phase === '2B') {
+            setMessage('P2, select your move');
+            setPhase('2A');
+        }
+        else if (phase === '3B') {
+            setMessage('P3, select your move');
+            setPhase('3A');
+        }
+        else if (phase === '4B') {
+            setMessage('P4, select your move');
+            setPhase('4A');
+        }
+    }
+
+    // ============================================================================
+    // =============================== GAME PHASES ================================
+    // ============================================================================
     const changePhase = (moveOrTarget) => {
 
         let target = '';
@@ -194,7 +419,7 @@ const BSGame = (props) => {
 
         // 1B (P1 choose target)
         else if (phase === '1B') {
-            setP1Targets(target);
+            setP1Target(target);
             setMessage('P2, select your move');
             setPhase('2A');
             setCurrentUser(p2);
@@ -209,7 +434,7 @@ const BSGame = (props) => {
 
         // 2B (P2 choose target)
         else if (phase === '2B') {
-            setP2Targets(target);
+            setP2Target(target);
             setMessage('P3, select your move');
             setPhase('3A');
             setCurrentUser(p3);
@@ -224,7 +449,7 @@ const BSGame = (props) => {
 
         // 3B (P3 choose target)
         else if (phase === '3B') {
-            setP3Targets(target);
+            setP3Target(target);
             setMessage('P4, select your move');
             setPhase('4A');
             setCurrentUser(p4);
@@ -239,61 +464,58 @@ const BSGame = (props) => {
 
         // 4B (P4 choose target)
         else if (phase === '4B') {
-            setP4Targets(target);
-            setMessage(`${p1.character.name} used ${p1Attack} on ${p1Targets.character.name}!`);
-            
-            damageValue = getDamage(p1, p1Targets);
-            changeHP(p1Targets, damageValue);
+            setP4Target(target);
 
-            setSubMessage(`${p1Targets.character.name} took ${damageValue} damage`);
+            useMove(p1, p1Target, p1Attack)
+
             setPhase('ATK1');
         }
 
         // ATK1 (fastest player attacks)
         else if (phase === 'ATK1') {
-            setMessage(`${p2.character.name} used ${p2Attack} on ${p2Targets.character.name}!`);
-            
-            damageValue = getDamage(p2, p2Targets);
-            changeHP(p2Targets, damageValue);
+            useMove(p2, p2Target, p2Attack);
 
-            setSubMessage(`${p2Targets.character.name} took ${damageValue} damage`);
             setPhase('ATK2');
         }
 
         // ATK2
         else if (phase === 'ATK2') {
-            setMessage(`${p3.character.name} used ${p3Attack} on ${p3Targets.character.name}!`);
-            
-            damageValue = getDamage(p3, p3Targets);
-            changeHP(p3Targets, damageValue);
+            useMove(p3, p3Target, p3Attack);
 
-            setSubMessage(`${p3Targets.character.name} took ${damageValue} damage`)
             setPhase('ATK3');
         }
 
         // ATK3
         else if (phase === 'ATK3') {
-            setMessage(`${p4.character.name} used ${p4Attack} on ${p4Targets.character.name}!`);
-            
-            damageValue = getDamage(p4, p4Targets);
-            changeHP(p4Targets, damageValue);
+            useMove(p4, p4Target, p4Attack);
 
-            setSubMessage(`${p4Targets.character.name} took ${damageValue} damage`)
             setPhase('ATK4');
         }
 
         // ATK 4
         else if (phase === 'ATK4') {
             setMessage(`Everyone regained some mana`);
+            if (p1.active) {
+                changeMANA(p1, -2);
+            }
+            if (p2.active) {
+                changeMANA(p2, -2);
+            }
+            if (p3.active) {
+                changeMANA(p3, -2);
+            }
+            if (p4.active) {
+                changeMANA(p4, -2);
+            }
             setSubMessage('');
-            setPhase('ATK5');
-            setCurrentUser(p1);
+            setPhase('ATK5');    
         }
 
         // ATK 5 (for any conditions, regen mana)
         else if (phase === 'ATK5') {
             setMessage('P1, select your move')
             setPhase('1A');
+            setCurrentUser(p1);
         }
     }
 
@@ -364,9 +586,11 @@ const BSGame = (props) => {
             <View style={styles.controlContainer}>
                 {phase.charAt(1) === 'A' && <BSMoveMenu currentUser={currentUser} onChoose={changePhase}/>}
                 {phase.charAt(1) === 'B' && <BSTargetMenu 
-                    currentUser={currentUser} 
+                    currentUser={currentUser}
+                    attacks={[p1Attack, p2Attack, p3Attack, p4Attack]}
                     sprites={[p1.character.sprite,p2.character.sprite,p3.character.sprite,p4.character.sprite]}
                     onChoose={changePhase}
+                    onBack={goBackPhase}
                 />}
                 {phase.charAt(1) === 'T' && 
                     <TouchableOpacity style={styles.nextButton} onPress={() => changePhase('')}>
