@@ -80,7 +80,7 @@ export default {
             },
             {
                 name: 'Lava Snipe',
-                manaCost: 7,
+                manaCost: 6,
                 desc: 'Single-target attack that pierces defense. 40% chance of inflicting burn.'
             },
             {
@@ -90,7 +90,7 @@ export default {
             },
             {
                 name: 'ULT: Eruption',
-                manaCost: 7,
+                manaCost: 6,
                 desc: 'Multi-target attack. 70% of inflicting burn on opponents.'
             },
         ]
