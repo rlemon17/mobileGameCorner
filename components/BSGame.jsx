@@ -72,6 +72,351 @@ const BSGame = (props) => {
     const [p4Target, setP4Target] = useState('');
     const [p4Attack, setP4Attack] = useState('');
 
+    const [p1Statuses, setP1Statuses] = useState([]);
+    const [p2Statuses, setP2Statuses] = useState([]);
+    const [p3Statuses, setP3Statuses] = useState([]);
+    const [p4Statuses, setP4Statuses] = useState([]);
+
+    // Change ATK, negative values imply raising
+    const changeATK = (userData, value) => {
+        let newValue = 0;
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1(prevState => {
+                newValue = prevState.curATK - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curATK: newValue
+                }
+            });
+        }
+        else if (userData.id === 2) {
+            setP2(prevState => {
+                newValue = prevState.curATK - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curATK: newValue
+                }
+            });
+        }
+        else if (userData.id === 3) {
+            setP3(prevState => {
+                newValue = prevState.curATK - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curATK: newValue
+                }
+            });
+        }
+        else {
+            setP4(prevState => {
+                newValue = prevState.curATK - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curATK: newValue
+                }
+            });
+        }
+    }
+
+    // Negative values imply raising
+    const changeDEF = (userData, value) => {
+        let newValue = 0;
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1(prevState => {
+                newValue = prevState.curDEF - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curDEF: newValue
+                }
+            });
+        }
+        else if (userData.id === 2) {
+            setP2(prevState => {
+                newValue = prevState.curDEF - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curDEF: newValue
+                }
+            });
+        }
+        else if (userData.id === 3) {
+            setP3(prevState => {
+                newValue = prevState.curDEF - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curDEF: newValue
+                }
+            });
+        }
+        else {
+            setP4(prevState => {
+                newValue = prevState.curDEF - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curDEF: newValue
+                }
+            });
+        }
+    }
+
+    // Negative values imply raising
+    const changeSPD = (userData, value) => {
+        let newValue = 0;
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1(prevState => {
+                newValue = prevState.curSPD - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curSPD: newValue
+                }
+            });
+        }
+        else if (userData.id === 2) {
+            setP2(prevState => {
+                newValue = prevState.curSPD - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curSPD: newValue
+                }
+            });
+        }
+        else if (userData.id === 3) {
+            setP3(prevState => {
+                newValue = prevState.curSPD - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curSPD: newValue
+                }
+            });
+        }
+        else {
+            setP4(prevState => {
+                newValue = prevState.curSPD - value;
+                if (newValue <= 1) {
+                    newValue = 1;
+                }
+                return {
+                    ...prevState,
+                    curSPD: newValue
+                }
+            });
+        }
+    }
+
+    // Undo any status effects
+    const undoStatus = (userData, status) => {
+        let difference = 0;
+        if (status === 'atkUp') {
+            difference = userData.curATK - userData.character.atk;
+            changeATK(userData, difference);
+        }
+        else if (status === 'defUp') {
+            difference = userData.curDEF - userData.character.def;
+            changeDEF(userData, difference);
+        }
+        else if (status === 'spdDown') {
+            difference = userData.curSPD - userData.character.spd;
+            changeSPD(userData, difference);
+        }
+    }
+
+    // Lowers count of all statuses in array (except burn and poison)
+    const lowerStatuses = (userData) => {
+        let newStatuses = {};
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name !== 'burn' && status.name !== 'poison') {
+                        status.turns = status.turns-1;
+
+                        if (status.turns === 0) {
+                            undoStatus(userData, status.name);
+                        }
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else if (userData.id === 2) {
+            setP2Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name !== 'burn' && status.name !== 'poison') {
+                        status.turns = status.turns-1;   
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else if (userData.id === 3) {
+            setP3Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name !== 'burn' && status.name !== 'poison') {
+                        status.turns = status.turns-1;   
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else {
+            setP4Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name !== 'burn' && status.name !== 'poison') {
+                        status.turns = status.turns-1;   
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+    }
+
+    // Lowers count burn and poison statuses
+    const lowerDamageStatuses = (userData) => {
+        let newStatuses = {};
+
+        // Figure out which state function to call
+        if (userData.id === 1) {
+            setP1Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name === 'burn') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 2);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                    }
+                    else if (status.name === 'poison') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 1);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else if (userData.id === 2) {
+            setP2Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name === 'burn') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 2);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                    }
+                    else if (status.name === 'poison') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 1);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else if (userData.id === 3) {
+            setP3Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name === 'burn') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 2);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                    }
+                    else if (status.name === 'poison') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 1);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+        else {
+            setP4Statuses(prevState => {
+                newStatuses = [...prevState];
+                // Decrement
+                newStatuses.forEach(status => {
+                    if (status.name === 'burn') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 2);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                    }
+                    else if (status.name === 'poison') {
+                        status.turns = status.turns-1;
+                        changeHP(userData, 1);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                    }
+                })
+                // Remove any cleared statuses
+                newStatuses = newStatuses.filter(status => status.turns > 0);
+                return newStatuses;
+            })
+        }
+    }
+
     // Returns how much damage should be dealt
     const getDamage = (userDataA, userDataB) => {
         // Get differnce between ATK and DEF
@@ -265,6 +610,79 @@ const BSGame = (props) => {
             if (moveName === 'Slime Drench') {
                 setSubMessage(`${foe1.character.name} and ${foe2.character.name} will be slowed for the next 2 turns!`);
                 changeMANA(attackerData, attackerData.character.moves[1].manaCost);
+
+                if (foe1.id === 1) {
+                    changeSPD(foe1, 6);
+                    setP1Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'spdDown') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'spdDown',
+                                turns: 2
+                            }
+                        ]
+                    })
+                    changeSPD(foe2, 6);
+                    setP2Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'spdDown') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'spdDown',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
+                else {
+                    changeSPD(foe1, 6);
+                    setP3Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'spdDown') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'spdDown',
+                                turns: 2
+                            }
+                        ]
+                    })
+                    changeSPD(foe2, 6);
+                    setP4Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'spdDown') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'spdDown',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
                 return;
             }
             // Acid
@@ -287,8 +705,78 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerData, foe2);
                 changeHP(foe2, damage2);
 
-                setSubMessage(`${foe1.character.name} took ${damage} damage and was poisoned, ${foe2.character.name} took ${damage2} damage and was poisoned`)
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage. Both were poisoned`)
                 changeMANA(attackerData, attackerData.character.moves[3].manaCost);
+
+                if (foe1.id === 1) {
+                    setP1Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'poison') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 3;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'poison',
+                                turns: 3
+                            }
+                        ]
+                    })
+                    setP2Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'poison') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 3;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'poison',
+                                turns: 3
+                            }
+                        ]
+                    })
+                }
+                else {
+                    setP3Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'poison') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 3;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'poison',
+                                turns: 3
+                            }
+                        ]
+                    })
+                    setP4Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'poison') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 3;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'poison',
+                                turns: 3
+                            }
+                        ]
+                    })
+                }
+
                 return;
             }
         }
@@ -300,12 +788,166 @@ const BSGame = (props) => {
                 changeHP(targetData, damage);
 
                 setSubMessage(`${targetData.character.name} took ${damage} damage`);
+
+                // Determine 40% burn chance
+                if (Math.floor(Math.random()*10) < 4) {
+                    setSubMessage(prev => prev + ` and was burned`);
+
+                    if (targetData.id === 1) {
+                        setP1Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                    else if (targetData.id === 2) {
+                        setP2Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                    else if (targetData.id === 3) {
+                        setP3Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                    else {
+                        setP4Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                }
+
                 changeMANA(attackerData, attackerData.character.moves[1].manaCost);
                 return;
             }
             // Heat Up
             else if (moveName === 'Heat Up') {
                 setSubMessage(`${attackerData.character.name}'s Attack increases for the next turn`);
+                changeATK(attackerData, -3);
+
+                if (attackerData.id === 1) {
+                    setP1Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'atkUp') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'atkUp',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
+                else if (attackerData.id === 2) {
+                    setP2Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'atkUp') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'atkUp',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
+                else if (attackerData.id === 3) {
+                    setP3Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'atkUp') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'atkUp',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
+                else {
+                    setP4Statuses(prev => {
+                        for (let i = 0; i < prev.length; i++) {
+                            if (prev[i].name === 'atkUp') {
+                                let newArr = [...prev];
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        return [
+                            ...prev,
+                            {
+                                name: 'atkUp',
+                                turns: 2
+                            }
+                        ]
+                    })
+                }
+
                 changeMANA(attackerData, attackerData.character.moves[2].manaCost);
                 return;
             }
@@ -318,6 +960,79 @@ const BSGame = (props) => {
                 changeHP(foe2, damage2);
 
                 setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
+                
+                // Determine 70% burn chance
+                if (Math.floor(Math.random()*10) < 7) {
+                    setSubMessage(prev => prev + `. Both were burned`);
+                    if (foe1.id === 1) {
+                        setP1Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                        setP2Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                    else {
+                        setP3Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                        setP4Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                }
                 changeMANA(attackerData, attackerData.character.moves[3].manaCost);
                 return;
             }
@@ -334,7 +1049,75 @@ const BSGame = (props) => {
             }
             // Purifying Pulse
             else if (moveName === 'Purifying Pulse') {
-                setSubMessage(`${attackerData.character.name} and ally's Defense increases for 2 turns, any statuses are healed.`)
+                setSubMessage(`${attackerData.character.name} and ally's Defense increases for 2 turns, any ailments were healed.`)
+                if (foe1 === p3) {
+                    changeDEF(p1, -1);
+                    setP1Statuses(prev => {
+                        let newArr = [...prev];
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'defUp') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+
+                        newArr.push({name: 'defUp', turns: 2});
+
+                        return newArr
+                    })
+                    changeDEF(p2, -1);
+                    setP2Statuses(prev => {
+                        let newArr = [...prev];
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'defUp') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+
+                        newArr.push({name: 'defUp', turns: 2});
+
+                        return newArr
+                    })
+                }
+                else {
+                    changeDEF(p3, -1);
+                    setP3Statuses(prev => {
+                        let newArr = [...prev];
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'defUp') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+
+                        newArr.push({name: 'defUp', turns: 2});
+
+                        return newArr
+                    })
+                    changeDEF(p4, -1);
+                    setP4Statuses(prev => {
+                        let newArr = [...prev];
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'defUp') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+
+                        newArr.push({name: 'defUp', turns: 2});
+
+                        return newArr
+                    })
+                }
                 changeMANA(attackerData, attackerData.character.moves[2].manaCost);
                 return;
             }
@@ -473,13 +1256,18 @@ const BSGame = (props) => {
 
         // ATK1 (fastest player attacks)
         else if (phase === 'ATK1') {
+            if (p1Statuses.length > 0) {
+                lowerStatuses(p1);
+            };
             useMove(p2, p2Target, p2Attack);
-
             setPhase('ATK2');
         }
 
         // ATK2
         else if (phase === 'ATK2') {
+            if (p2Statuses.length > 0) {
+                lowerStatuses(p2);
+            };
             useMove(p3, p3Target, p3Attack);
 
             setPhase('ATK3');
@@ -487,6 +1275,9 @@ const BSGame = (props) => {
 
         // ATK3
         else if (phase === 'ATK3') {
+            if (p3Statuses.length > 0) {
+                lowerStatuses(p3);
+            };
             useMove(p4, p4Target, p4Attack);
 
             setPhase('ATK4');
@@ -494,6 +1285,11 @@ const BSGame = (props) => {
 
         // ATK 4
         else if (phase === 'ATK4') {
+            setSubMessage(prev => {return ''});
+            if (p4Statuses.length > 0) {
+                lowerStatuses(p4);
+            };
+
             setMessage(`Everyone regained some mana`);
             if (p1.active) {
                 changeMANA(p1, -2);
@@ -507,12 +1303,26 @@ const BSGame = (props) => {
             if (p4.active) {
                 changeMANA(p4, -2);
             }
-            setSubMessage('');
+
+            // Lower any burns or poisons
+            if (p1Statuses.length > 0) {
+                lowerDamageStatuses(p1);
+            }
+            if (p2Statuses.length > 0) {
+                lowerDamageStatuses(p2);
+            }
+            if (p3Statuses.length > 0) {
+                lowerDamageStatuses(p3);
+            }
+            if (p4Statuses.length > 0) {
+                lowerDamageStatuses(p4);
+            }
             setPhase('ATK5');    
         }
 
         // ATK 5 (for any conditions, regen mana)
         else if (phase === 'ATK5') {
+            setSubMessage('');
             setMessage('P1, select your move')
             setPhase('1A');
             setCurrentUser(p1);
@@ -535,13 +1345,13 @@ const BSGame = (props) => {
                             offset={true} 
                             player={'P4'} 
                             data={p4}
-                            conditions={[]}
+                            conditions={p4Statuses}
                         />
                         <BSStatBar 
                             offset={false} 
                             player={'P3'} 
                             data={p3}
-                            conditions={[]}
+                            conditions={p3Statuses}
                         />
                     </View>
 
@@ -571,13 +1381,13 @@ const BSGame = (props) => {
                             offset={false} 
                             player={'P1'} 
                             data={p1}
-                            conditions={[]}
+                            conditions={p1Statuses}
                         />
                         <BSStatBar 
                             offset={true} 
                             player={'P2'} 
                             data={p2}
-                            conditions={[]}
+                            conditions={p2Statuses}
                         />  
                     </View>
                 </View>

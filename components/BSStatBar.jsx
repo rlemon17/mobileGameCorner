@@ -4,6 +4,7 @@ import { Card } from 'react-native-paper';
 
 import Colors from './Colors';
 import BSCharacters from './BSCharacters';
+import BSStatuses from './BSStatuses';
 
 const BSStatBar = (props) => {
 
@@ -18,7 +19,7 @@ const BSStatBar = (props) => {
                 <View style={styles.hpBarDark}/>
                 <View style={[styles.hpBar, 
                     {width: ((props.data.curHP/props.data.character.hp)*100)},
-                    props.data.curHP < (props.data.character.hp*0.4) && styles.hpBarUlt]}
+                    props.data.curHP <= (props.data.character.hp*0.4) && styles.hpBarUlt]}
                 />
             </View>
             <View style={styles.barRowContainer}>
@@ -29,9 +30,17 @@ const BSStatBar = (props) => {
                 />
             </View>
 
-            {props.conditions.length !== 0 && <View style={styles.statusCard}>
-                <Text style={styles.nameText}>{props.conditions[0]}</Text>
-            </View>}
+            {props.conditions.map((status, index) => {
+                return (
+                    <View style={[styles.statusCard, {left: (index*30)+10}]} key={status.name}>
+                        <Image 
+                            source = {{uri: BSStatuses[status.name]}}
+                            style = {styles.statusIcon}
+                        /> 
+                        <Text style={styles.statusText}>{status.turns}</Text>
+                    </View>  
+                )
+            })}
 
             <Text style={styles.hpText}>
                 {props.data.curHP}/{props.data.character.hp}
@@ -75,6 +84,11 @@ const styles = StyleSheet.create({
     },
     nameText: {
         fontSize: 10
+    },
+    statusText: {
+        fontSize: 8,
+        marginLeft: 2,
+        fontWeight: 'bold'
     },
     statText: {
         fontSize: 10,
@@ -122,7 +136,6 @@ const styles = StyleSheet.create({
         shadowRadius: 1,
         position: 'absolute',
         top: 45,
-        left: 10,
         flexDirection: 'row'
     },
     hpText: {
@@ -140,6 +153,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         left: 59
+    },
+    statusIcon: {
+        height: 10,
+        width: 10
     }
 })
 

@@ -118,7 +118,7 @@ export default {
             {
                 name: 'Purifying Pulse',
                 manaCost: 10,
-                desc: 'Boost all allies Defense by 1 for 2 turns, cures all status effects.'
+                desc: 'Boost all allies Defense by 1 for 2 turns, cures all ailments.'
             },
             {
                 name: 'ULT: Water Surge',
