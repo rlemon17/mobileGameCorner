@@ -59,7 +59,7 @@ const BSMoveMenu = (props) => {
                     onPress={() => onChoose(user.character.moves[3].name, user.character.moves[3].manaCost)}
                 >
                     <Text style={styles.moveName}>{user.character.moves[3].name}</Text>
-                    <Text style={styles.moveMana}>{`Usable at < ${Math.floor(user.character.hp*0.4)} HP`}</Text>
+                    <Text style={styles.moveMana}>{`Usable at <= ${Math.floor(user.character.hp*0.4)} HP`}</Text>
                     <Text style={styles.moveMana}>{user.character.moves[3].manaCost} mana</Text>
                     <Text style={styles.moveDesc}>{user.character.moves[3].desc}</Text>
                 </TouchableOpacity>
