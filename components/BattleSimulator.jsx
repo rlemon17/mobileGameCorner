@@ -24,7 +24,26 @@ const BattleSimulator = () => {
     }
 
     const handleModeTwo = (chosenCharacters) => {
-        setCharacterArray(chosenCharacters);
+        let newArray = [...chosenCharacters];
+
+        // Handle any random picks
+        for (let i = 0; i < newArray.length; i++) {
+            if (newArray[i].name === 'Random') {
+                let choice = Math.floor(Math.random()*3);
+
+                if (choice === 0) {
+                    newArray[i] = BSCharacters.slime;
+                }
+                else if (choice === 1) {
+                    newArray[i] = BSCharacters.fireSlime;
+                }
+                else if (choice === 2) {
+                    newArray[i] = BSCharacters.waterSlime;
+                }
+            }
+        }
+        
+        setCharacterArray(newArray);
         setMode(2);
     }
 

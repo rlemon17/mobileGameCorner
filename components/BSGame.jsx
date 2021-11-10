@@ -4,9 +4,13 @@ import { Card } from 'react-native-paper';
 
 import Colors from './Colors';
 import BSCharacters from './BSCharacters';
+import BSMoves from './BSMoves';
+
 import BSStatBar from './BSStatBar';
 import BSMoveMenu from './BSMoveMenu';
 import BSTargetMenu from './BSTargetMenu';
+import BSDamage from './BSDamage';
+import BSMoveAnimation from './BSMoveAnimation';
 
 const BSGame = (props) => {
 
@@ -77,6 +81,29 @@ const BSGame = (props) => {
     const [p3Statuses, setP3Statuses] = useState([]);
     const [p4Statuses, setP4Statuses] = useState([]);
 
+    const [p1Damage, setP1Damage] = useState(0);
+    const [p2Damage, setP2Damage] = useState(0);
+    const [p3Damage, setP3Damage] = useState(0);
+    const [p4Damage, setP4Damage] = useState(0);
+
+    const [p1Animation, setP1Animation] = useState('');
+    const [p2Animation, setP2Animation] = useState('');
+    const [p3Animation, setP3Animation] = useState('');
+    const [p4Animation, setP4Animation] = useState('');
+
+    // Resets damage numbers to 0 and animations to blank strings
+    const setZeroes = () => {
+        setP1Damage(prev => 0);
+        setP2Damage(prev => 0);
+        setP3Damage(prev => 0);
+        setP4Damage(prev => 0);
+
+        setP1Animation(prev => '');
+        setP2Animation(prev => '');
+        setP3Animation(prev => '');
+        setP4Animation(prev => '');
+    }
+
     // Change ATK, negative values imply raising
     const changeATK = (userData, value) => {
         let newValue = 0;
@@ -140,9 +167,6 @@ const BSGame = (props) => {
         if (userData.id === 1) {
             setP1(prevState => {
                 newValue = prevState.curDEF - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curDEF: newValue
@@ -152,9 +176,6 @@ const BSGame = (props) => {
         else if (userData.id === 2) {
             setP2(prevState => {
                 newValue = prevState.curDEF - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curDEF: newValue
@@ -164,9 +185,6 @@ const BSGame = (props) => {
         else if (userData.id === 3) {
             setP3(prevState => {
                 newValue = prevState.curDEF - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curDEF: newValue
@@ -176,9 +194,6 @@ const BSGame = (props) => {
         else {
             setP4(prevState => {
                 newValue = prevState.curDEF - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curDEF: newValue
@@ -195,9 +210,6 @@ const BSGame = (props) => {
         if (userData.id === 1) {
             setP1(prevState => {
                 newValue = prevState.curSPD - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curSPD: newValue
@@ -207,9 +219,6 @@ const BSGame = (props) => {
         else if (userData.id === 2) {
             setP2(prevState => {
                 newValue = prevState.curSPD - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curSPD: newValue
@@ -219,9 +228,6 @@ const BSGame = (props) => {
         else if (userData.id === 3) {
             setP3(prevState => {
                 newValue = prevState.curSPD - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curSPD: newValue
@@ -231,9 +237,6 @@ const BSGame = (props) => {
         else {
             setP4(prevState => {
                 newValue = prevState.curSPD - value;
-                if (newValue <= 1) {
-                    newValue = 1;
-                }
                 return {
                     ...prevState,
                     curSPD: newValue
@@ -329,6 +332,7 @@ const BSGame = (props) => {
     // Lowers count burn and poison statuses
     const lowerDamageStatuses = (userData) => {
         let newStatuses = {};
+        let damage = 0;
 
         // Figure out which state function to call
         if (userData.id === 1) {
@@ -338,15 +342,16 @@ const BSGame = (props) => {
                 newStatuses.forEach(status => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 2);
+                        damage = damage + 2;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 1);
+                        damage = damage + 1;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
                     }
                 })
+                changeHP(userData, damage);
                 // Remove any cleared statuses
                 newStatuses = newStatuses.filter(status => status.turns > 0);
                 return newStatuses;
@@ -359,15 +364,16 @@ const BSGame = (props) => {
                 newStatuses.forEach(status => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 2);
+                        damage = damage + 2;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 1);
+                        damage = damage + 1;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
                     }
                 })
+                changeHP(userData, damage);
                 // Remove any cleared statuses
                 newStatuses = newStatuses.filter(status => status.turns > 0);
                 return newStatuses;
@@ -380,15 +386,16 @@ const BSGame = (props) => {
                 newStatuses.forEach(status => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 2);
+                        damage = damage + 2;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 1);
+                        damage = damage + 1;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
                     }
                 })
+                changeHP(userData, damage);
                 // Remove any cleared statuses
                 newStatuses = newStatuses.filter(status => status.turns > 0);
                 return newStatuses;
@@ -401,15 +408,16 @@ const BSGame = (props) => {
                 newStatuses.forEach(status => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 2);
+                        damage = damage + 2;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
-                        changeHP(userData, 1);
+                        damage = damage + 1;
                         setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
                     }
                 })
+                changeHP(userData, damage);
                 // Remove any cleared statuses
                 newStatuses = newStatuses.filter(status => status.turns > 0);
                 return newStatuses;
@@ -507,6 +515,7 @@ const BSGame = (props) => {
 
         // Figure out which state function to call
         if (userData.id === 1) {
+            setP1Damage(value);
             setP1(prevState => {
                 newValue = prevState.curHP - value;
                 if (newValue <= 0) {
@@ -524,6 +533,7 @@ const BSGame = (props) => {
             });
         }
         else if (userData.id === 2) {
+            setP2Damage(value);
             setP2(prevState => {
                 newValue = prevState.curHP - value;
                 if (newValue <= 0) {
@@ -541,6 +551,7 @@ const BSGame = (props) => {
             });
         }
         else if (userData.id === 3) {
+            setP3Damage(value);
             setP3(prevState => {
                 newValue = prevState.curHP - value;
                 if (newValue <= 0) {
@@ -559,6 +570,7 @@ const BSGame = (props) => {
         }
         else {
             setP4(prevState => {
+                setP4Damage(value);
                 newValue = prevState.curHP - value;
                 if (newValue <= 0) {
                     newValue = 0;
@@ -584,6 +596,20 @@ const BSGame = (props) => {
 
         setMessage(`${attackerData.character.name} used ${moveName}!`)
         let damage = 0;
+
+        // Set animation for target
+        if (targetData.id === 1) {
+            setP1Animation(BSMoves[moveName]);
+        }
+        else if (targetData.id === 2) {
+            setP2Animation(BSMoves[moveName]);
+        }
+        else if (targetData.id === 3) {
+            setP3Animation(BSMoves[moveName]);
+        }
+        else {
+            setP4Animation(BSMoves[moveName]);
+        }
 
         // Handle all basic Attacks
         if (moveName === 'Tackle' || moveName === 'Ember' || moveName === 'Water Gun') {
@@ -612,6 +638,8 @@ const BSGame = (props) => {
                 changeMANA(attackerData, attackerData.character.moves[1].manaCost);
 
                 if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
                     changeSPD(foe1, 6);
                     setP1Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
@@ -648,6 +676,8 @@ const BSGame = (props) => {
                     })
                 }
                 else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
                     changeSPD(foe1, 6);
                     setP3Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
@@ -693,6 +723,15 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerData, foe2);
                 changeHP(foe2, damage2);
 
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
+
                 setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
                 changeMANA(attackerData, attackerData.character.moves[2].manaCost);
                 return;
@@ -704,6 +743,15 @@ const BSGame = (props) => {
 
                 damage2 = getDamage(attackerData, foe2);
                 changeHP(foe2, damage2);
+
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
 
                 setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage. Both were poisoned`)
                 changeMANA(attackerData, attackerData.character.moves[3].manaCost);
@@ -776,7 +824,6 @@ const BSGame = (props) => {
                         ]
                     })
                 }
-
                 return;
             }
         }
@@ -965,6 +1012,8 @@ const BSGame = (props) => {
                 if (Math.floor(Math.random()*10) < 7) {
                     setSubMessage(prev => prev + `. Both were burned`);
                     if (foe1.id === 1) {
+                        setP1Animation(BSMoves[moveName]);
+                        setP2Animation(BSMoves[moveName]);
                         setP1Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
@@ -999,6 +1048,8 @@ const BSGame = (props) => {
                         })
                     }
                     else {
+                        setP3Animation(BSMoves[moveName]);
+                        setP4Animation(BSMoves[moveName]);
                         setP3Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
@@ -1041,6 +1092,18 @@ const BSGame = (props) => {
         else if (attackerData.character.name === 'Water Slime') {
             // Healing Rain
             if (moveName === 'Healing Rain') {
+                if (targetData.id === 1) {
+                    setP1Animation(BSMoves['Heal']);
+                }
+                else if (targetData.id === 2) {
+                    setP2Animation(BSMoves['Heal']);
+                }
+                else if (targetData.id === 3) {
+                    setP3Animation(BSMoves['Heal']);
+                }
+                else {
+                    setP4Animation(BSMoves['Heal']);
+                }
                 changeHP(targetData, -5);
 
                 setSubMessage(`${targetData.character.name} healed 5 HP`);
@@ -1051,6 +1114,8 @@ const BSGame = (props) => {
             else if (moveName === 'Purifying Pulse') {
                 setSubMessage(`${attackerData.character.name} and ally's Defense increases for 2 turns, any ailments were healed.`)
                 if (foe1 === p3) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
                     changeDEF(p1, -1);
                     setP1Statuses(prev => {
                         let newArr = [...prev];
@@ -1085,6 +1150,8 @@ const BSGame = (props) => {
                     })
                 }
                 else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
                     changeDEF(p3, -1);
                     setP3Statuses(prev => {
                         let newArr = [...prev];
@@ -1127,8 +1194,14 @@ const BSGame = (props) => {
                 let ally2 = p2;
 
                 if (attackerData.id === 3 || attackerData.id === 4) {
+                    setP3Animation(BSMoves['Heal']);
+                    setP4Animation(BSMoves['Heal']);
                     ally1 = p3;
                     ally2 = p4;
+                }
+                else {
+                    setP1Animation(BSMoves['Heal']);
+                    setP2Animation(BSMoves['Heal']);
                 }
 
                 damage = getDamage(attackerData, foe1);
@@ -1256,6 +1329,7 @@ const BSGame = (props) => {
 
         // ATK1 (fastest player attacks)
         else if (phase === 'ATK1') {
+            setZeroes();
             if (p1Statuses.length > 0) {
                 lowerStatuses(p1);
             };
@@ -1265,6 +1339,7 @@ const BSGame = (props) => {
 
         // ATK2
         else if (phase === 'ATK2') {
+            setZeroes();
             if (p2Statuses.length > 0) {
                 lowerStatuses(p2);
             };
@@ -1275,6 +1350,7 @@ const BSGame = (props) => {
 
         // ATK3
         else if (phase === 'ATK3') {
+            setZeroes();
             if (p3Statuses.length > 0) {
                 lowerStatuses(p3);
             };
@@ -1285,6 +1361,7 @@ const BSGame = (props) => {
 
         // ATK 4
         else if (phase === 'ATK4') {
+            setZeroes();
             setSubMessage(prev => {return ''});
             if (p4Statuses.length > 0) {
                 lowerStatuses(p4);
@@ -1322,6 +1399,7 @@ const BSGame = (props) => {
 
         // ATK 5 (for any conditions, regen mana)
         else if (phase === 'ATK5') {
+            setZeroes();
             setSubMessage('');
             setMessage('P1, select your move')
             setPhase('1A');
@@ -1392,6 +1470,16 @@ const BSGame = (props) => {
                     </View>
                 </View>
 
+                {p4Animation !== '' && <BSMoveAnimation img={p4Animation} style={{right: 0}}/>}
+                {p4Damage !== 0 && <BSDamage damage={p4Damage} style={{top: 90, right: 70}}/>}
+                {p3Animation !== '' && <BSMoveAnimation img={p3Animation} style={{right: 110}}/>}
+                {p3Damage !== 0 && <BSDamage damage={p3Damage} style={{top: 90, right: 190}}/>}
+                
+                {p1Animation !== '' && <BSMoveAnimation img={p1Animation} style={{left: 0, bottom: 20}}/>}
+                {p1Damage !== 0 && <BSDamage damage={p1Damage} style={{bottom: 120, left: 70}}/>}
+                {p2Animation !== '' && <BSMoveAnimation img={p2Animation} style={{left: 110, bottom: 20}}/>}
+                {p2Damage !== 0 && <BSDamage damage={p2Damage} style={{bottom: 120, left: 190}}/>}
+                
             </View>
             <View style={styles.controlContainer}>
                 {phase.charAt(1) === 'A' && <BSMoveMenu currentUser={currentUser} onChoose={changePhase}/>}
@@ -1503,7 +1591,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.75,
         shadowRadius: 2
-    },
+    }
 })
 
 export default BSGame;
