@@ -41,7 +41,8 @@ const BSTargetMenu = (props) => {
                 (id > 2 && type === 'multiSupp') ||
                 (id !== 1 && type === 'self') ||
                 (id < 3 && type === 'single') ||
-                (id < 3 && type === 'multi')
+                (id < 3 && type === 'multi') ||
+                (!props.activePlayers[0])
             ) {
                 return;
             }
@@ -52,7 +53,8 @@ const BSTargetMenu = (props) => {
                 (id > 2 && type === 'multiSupp') ||
                 (id !== 2 && type === 'self') ||
                 (id < 3 && type === 'single') ||
-                (id < 3 && type === 'multi')
+                (id < 3 && type === 'multi') ||
+                (!props.activePlayers[1])
             ) {
                 return;
             }
@@ -63,7 +65,8 @@ const BSTargetMenu = (props) => {
                 (id < 3 && type === 'multiSupp') ||
                 (id !== 3 && type === 'self') ||
                 (id > 2 && type === 'single') ||
-                (id > 2 && type === 'multi')
+                (id > 2 && type === 'multi') ||
+                (!props.activePlayers[2])
             ) {
                 return;
             }
@@ -74,7 +77,8 @@ const BSTargetMenu = (props) => {
                 (id < 3 && type === 'multiSupp') ||
                 (id !== 4 && type === 'self') ||
                 (id > 2 && type === 'single') ||
-                (id > 2 && type === 'multi')
+                (id > 2 && type === 'multi') ||
+                (!props.activePlayers[3])
             ) {
                 return;
             }
@@ -94,7 +98,8 @@ const BSTargetMenu = (props) => {
                     (id < 3 && type === 'multiSupp') ||
                     (id !== 3 && type === 'self') ||
                     (id > 2 && type === 'single') ||
-                    (id > 2 && type === 'multi')
+                    (id > 2 && type === 'multi') ||
+                    (!props.activePlayers[2])
                 ) && styles.off]} onPress={() => onChoose('3')}>
                     <Text style={styles.text}>{id === 3 ? 'You' : 'P3'}</Text>
                     <Image 
@@ -108,7 +113,8 @@ const BSTargetMenu = (props) => {
                     (id < 3 && type === 'multiSupp') ||
                     (id !== 4 && type === 'self') ||
                     (id > 2 && type === 'single') ||
-                    (id > 2 && type === 'multi')
+                    (id > 2 && type === 'multi') ||
+                    (!props.activePlayers[3])
                 ) && styles.off]} onPress={() => onChoose('4')}>
                     <Text style={styles.text}>{id === 4 ? 'You' : 'P4'}</Text>
                     <Image 
@@ -134,7 +140,8 @@ const BSTargetMenu = (props) => {
                     (id > 2 && type === 'multiSupp') ||
                     (id !== 1 && type === 'self') ||
                     (id < 3 && type === 'single') ||
-                    (id < 3 && type === 'multi')
+                    (id < 3 && type === 'multi') ||
+                    (!props.activePlayers[0])
                 ) && styles.off]} onPress={() => onChoose('1')}>
                     <Text style={styles.text}>{id === 1 ? 'You' : 'P1'}</Text>
                     <Image 
@@ -147,7 +154,8 @@ const BSTargetMenu = (props) => {
                     (id > 2 && type === 'multiSupp') ||
                     (id !== 2 && type === 'self') ||
                     (id < 3 && type === 'single') ||
-                    (id < 3 && type === 'multi')
+                    (id < 3 && type === 'multi') ||
+                    (!props.activePlayers[1])
                 ) && styles.off]} onPress={() => onChoose('2')}>
                     <Text style={styles.text}>{id === 2 ? 'You' : 'P2'}</Text>
                     <Image 
