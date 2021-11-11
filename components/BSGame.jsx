@@ -11,8 +11,10 @@ import BSMoveMenu from './BSMoveMenu';
 import BSTargetMenu from './BSTargetMenu';
 import BSDamage from './BSDamage';
 import BSMoveAnimation from './BSMoveAnimation';
+import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const BSGame = (props) => {
+    const humanPlayers = props.humanPlayers;
 
     const [p1, setP1] = useState({
         id: 1,
@@ -22,7 +24,7 @@ const BSGame = (props) => {
         curATK: props.chosenCharacters[0].atk,
         curDEF: props.chosenCharacters[0].def,
         curSPD: props.chosenCharacters[0].spd,
-        curMANA: Math.floor(props.chosenCharacters[0].mana/2),
+        curMANA: Math.floor(props.chosenCharacters[0].mana/2)
     });
 
     const [p2, setP2] = useState({
@@ -33,7 +35,7 @@ const BSGame = (props) => {
         curATK: props.chosenCharacters[1].atk,
         curDEF: props.chosenCharacters[1].def,
         curSPD: props.chosenCharacters[1].spd,
-        curMANA: Math.floor(props.chosenCharacters[1].mana/2),
+        curMANA: Math.floor(props.chosenCharacters[1].mana/2)
     });
 
     const [p3, setP3] = useState({
@@ -44,18 +46,18 @@ const BSGame = (props) => {
         curATK: props.chosenCharacters[2].atk,
         curDEF: props.chosenCharacters[2].def,
         curSPD: props.chosenCharacters[2].spd,
-        curMANA: Math.floor(props.chosenCharacters[2].mana/2),
+        curMANA: Math.floor(props.chosenCharacters[2].mana/2)
     });
 
     const [p4, setP4] = useState({
         id: 4,
         active: true,
         character: props.chosenCharacters[3],
-        curHP: (props.chosenCharacters[3].hp),
+        curHP: props.chosenCharacters[3].hp,
         curATK: props.chosenCharacters[3].atk,
         curDEF: props.chosenCharacters[3].def,
         curSPD: props.chosenCharacters[3].spd,
-        curMANA: Math.floor(props.chosenCharacters[3].mana/2),
+        curMANA: Math.floor(props.chosenCharacters[3].mana/2)
     });
 
     const [message, setMessage] = useState('P1, select your move');
@@ -91,6 +93,8 @@ const BSGame = (props) => {
     const [p3Animation, setP3Animation] = useState('');
     const [p4Animation, setP4Animation] = useState('');
 
+    const [turnOrder, setTurnOrder] = useState([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD));
+    
     // Resets damage numbers to 0 and animations to blank strings
     const setZeroes = () => {
         setP1Damage(prev => 0);
@@ -102,6 +106,68 @@ const BSGame = (props) => {
         setP2Animation(prev => '');
         setP3Animation(prev => '');
         setP4Animation(prev => '');
+    }
+
+    const handleReset = () => {
+        setZeroes();
+        setP1({
+            id: 1,
+            active: true,
+            character: props.chosenCharacters[0],
+            curHP: props.chosenCharacters[0].hp,
+            curATK: props.chosenCharacters[0].atk,
+            curDEF: props.chosenCharacters[0].def,
+            curSPD: props.chosenCharacters[0].spd,
+            curMANA: Math.floor(props.chosenCharacters[0].mana/2)    
+        });
+        setP2({
+            id: 2,
+            active: true,
+            character: props.chosenCharacters[1],
+            curHP: props.chosenCharacters[1].hp,
+            curATK: props.chosenCharacters[1].atk,
+            curDEF: props.chosenCharacters[1].def,
+            curSPD: props.chosenCharacters[1].spd,
+            curMANA: Math.floor(props.chosenCharacters[1].mana/2)
+        });
+        setP3({
+            id: 3,
+            active: true,
+            character: props.chosenCharacters[2],
+            curHP: props.chosenCharacters[2].hp,
+            curATK: props.chosenCharacters[2].atk,
+            curDEF: props.chosenCharacters[2].def,
+            curSPD: props.chosenCharacters[2].spd,
+            curMANA: Math.floor(props.chosenCharacters[2].mana/2)
+        });
+        setP4({
+            id: 4,
+            active: true,
+            character: props.chosenCharacters[3],
+            curHP: props.chosenCharacters[3].hp,
+            curATK: props.chosenCharacters[3].atk,
+            curDEF: props.chosenCharacters[3].def,
+            curSPD: props.chosenCharacters[3].spd,
+            curMANA: Math.floor(props.chosenCharacters[3].mana/2)
+        });
+        setMessage('P1, select your move');
+        setSubMessage('');
+        setCurrentUser(p1);
+
+        setP1Statuses([]);
+        setP2Statuses([]);
+        setP3Statuses([]);
+        setP4Statuses([]);
+
+        setPhase('1A')
+    }
+
+    const handleChangeChar = () => {
+        props.onChange(humanPlayers);
+    }
+
+    const handleQuit = () => {
+        props.onQuit();
     }
 
     // Change ATK, negative values imply raising
@@ -275,7 +341,7 @@ const BSGame = (props) => {
                     if (status.name !== 'burn' && status.name !== 'poison') {
                         status.turns = status.turns-1;
 
-                        if (status.turns === 0) {
+                        if (status.turns <= 0) {
                             undoStatus(userData, status.name);
                         }
                     }
@@ -291,7 +357,11 @@ const BSGame = (props) => {
                 // Decrement
                 newStatuses.forEach(status => {
                     if (status.name !== 'burn' && status.name !== 'poison') {
-                        status.turns = status.turns-1;   
+                        status.turns = status.turns-1;
+
+                        if (status.turns <= 0) {
+                            undoStatus(userData, status.name);
+                        }
                     }
                 })
                 // Remove any cleared statuses
@@ -305,7 +375,11 @@ const BSGame = (props) => {
                 // Decrement
                 newStatuses.forEach(status => {
                     if (status.name !== 'burn' && status.name !== 'poison') {
-                        status.turns = status.turns-1;   
+                        status.turns = status.turns-1;
+
+                        if (status.turns <= 0) {
+                            undoStatus(userData, status.name);
+                        }
                     }
                 })
                 // Remove any cleared statuses
@@ -319,7 +393,11 @@ const BSGame = (props) => {
                 // Decrement
                 newStatuses.forEach(status => {
                     if (status.name !== 'burn' && status.name !== 'poison') {
-                        status.turns = status.turns-1;   
+                        status.turns = status.turns-1;
+
+                        if (status.turns <= 0) {
+                            undoStatus(userData, status.name);
+                        }
                     }
                 })
                 // Remove any cleared statuses
@@ -594,26 +672,57 @@ const BSGame = (props) => {
     // Change target's HP, attacker's mana, inflict any statuses
     const useMove = (attackerData, targetData, moveName) => {
 
+        // Edge case if character faints mid round
+        if ((attackerData.id === 1 && !p1.active) ||
+        (attackerData.id === 2 && !p2.active) ||
+        (attackerData.id === 3 && !p3.active) ||
+        (attackerData.id === 4 && !p4.active)) {
+            setMessage(`${attackerData.character.name} can no longer attack!`);
+            setSubMessage('');
+            return;
+        }
+
         setMessage(`${attackerData.character.name} used ${moveName}!`)
         let damage = 0;
 
+        // Get updated stats for attacker and target, in case stats were changed mid round
+        let attackerDataUpdated = p1;
+        let targetDataUpdated = p3;
+
+        if (attackerData.id === 1) {
+            attackerDataUpdated = p1;
+        }
+        else if (attackerData.id === 2) {
+            attackerDataUpdated = p2;
+        }
+        else if (attackerData.id === 3) {
+            attackerDataUpdated = p3;
+        }
+        else {
+            attackerDataUpdated = p4;
+        }
+
         // Set animation for target
         if (targetData.id === 1) {
+            targetDataUpdated = p1;
             setP1Animation(BSMoves[moveName]);
         }
         else if (targetData.id === 2) {
+            targetDataUpdated = p2;
             setP2Animation(BSMoves[moveName]);
         }
         else if (targetData.id === 3) {
+            targetDataUpdated = p3;
             setP3Animation(BSMoves[moveName]);
         }
         else {
+            targetDataUpdated = p4;
             setP4Animation(BSMoves[moveName]);
         }
 
         // Handle all basic Attacks
         if (moveName === 'Tackle' || moveName === 'Ember' || moveName === 'Water Gun') {
-            damage = getDamage(attackerData, targetData);
+            damage = getDamage(attackerDataUpdated, targetDataUpdated);
             changeHP(targetData, damage);
             setSubMessage(`${targetData.character.name} took ${damage} damage`);
             return;
@@ -717,10 +826,10 @@ const BSGame = (props) => {
             }
             // Acid
             else if (moveName === 'Acid') {
-                damage = getDamage(attackerData, foe1);
+                damage = getDamage(attackerDataUpdated, foe1);
                 changeHP(foe1, damage);
 
-                damage2 = getDamage(attackerData, foe2);
+                damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
                 if (foe1.id === 1) {
@@ -738,10 +847,10 @@ const BSGame = (props) => {
             }
             // ULT: Toxic Acid
             else {
-                damage = getDamage(attackerData, foe1);
+                damage = getDamage(attackerDataUpdated, foe1);
                 changeHP(foe1, damage);
 
-                damage2 = getDamage(attackerData, foe2);
+                damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
                 if (foe1.id === 1) {
@@ -831,7 +940,7 @@ const BSGame = (props) => {
         else if (attackerData.character.name === 'Fire Slime') {
             // Lava Snipe
             if (moveName === 'Lava Snipe') {
-                damage = getDamage(attackerData, {curDEF: 0});
+                damage = getDamage(attackerDataUpdated, {curDEF: 0});
                 changeHP(targetData, damage);
 
                 setSubMessage(`${targetData.character.name} took ${damage} damage`);
@@ -1000,10 +1109,10 @@ const BSGame = (props) => {
             }
             // ULT: Eruption
             else {
-                damage = getDamage(attackerData, foe1);
+                damage = getDamage(attackerDataUpdated, foe1);
                 changeHP(foe1, damage);
 
-                damage2 = getDamage(attackerData, foe2);
+                damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
                 setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
@@ -1112,7 +1221,7 @@ const BSGame = (props) => {
             }
             // Purifying Pulse
             else if (moveName === 'Purifying Pulse') {
-                setSubMessage(`${attackerData.character.name} and ally's Defense increases for 2 turns, any ailments were healed.`)
+                setSubMessage(`${attackerData.character.name} and ally's Defense increases, any ailments were healed.`)
                 if (foe1 === p3) {
                     setP1Animation(BSMoves[moveName]);
                     setP2Animation(BSMoves[moveName]);
@@ -1123,12 +1232,12 @@ const BSGame = (props) => {
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
-                                newArr[i].turns = 2;
+                                newArr[i].turns = 3;
                                 return newArr;
                             }
                         }
 
-                        newArr.push({name: 'defUp', turns: 2});
+                        newArr.push({name: 'defUp', turns: 3});
 
                         return newArr
                     })
@@ -1139,12 +1248,12 @@ const BSGame = (props) => {
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
-                                newArr[i].turns = 2;
+                                newArr[i].turns = 3;
                                 return newArr;
                             }
                         }
 
-                        newArr.push({name: 'defUp', turns: 2});
+                        newArr.push({name: 'defUp', turns: 3});
 
                         return newArr
                     })
@@ -1159,12 +1268,12 @@ const BSGame = (props) => {
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
-                                newArr[i].turns = 2;
+                                newArr[i].turns = 3;
                                 return newArr;
                             }
                         }
 
-                        newArr.push({name: 'defUp', turns: 2});
+                        newArr.push({name: 'defUp', turns: 3});
 
                         return newArr
                     })
@@ -1175,12 +1284,12 @@ const BSGame = (props) => {
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
-                                newArr[i].turns = 2;
+                                newArr[i].turns = 3;
                                 return newArr;
                             }
                         }
 
-                        newArr.push({name: 'defUp', turns: 2});
+                        newArr.push({name: 'defUp', turns: 3});
 
                         return newArr
                     })
@@ -1204,10 +1313,10 @@ const BSGame = (props) => {
                     setP2Animation(BSMoves['Heal']);
                 }
 
-                damage = getDamage(attackerData, foe1);
+                damage = getDamage(attackerDataUpdated, foe1);
                 changeHP(foe1, damage);
 
-                damage2 = getDamage(attackerData, foe2);
+                damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
                 changeHP(ally1, -3);
@@ -1276,9 +1385,23 @@ const BSGame = (props) => {
         // 1B (P1 choose target)
         else if (phase === '1B') {
             setP1Target(target);
-            setMessage('P2, select your move');
-            setPhase('2A');
-            setCurrentUser(p2);
+
+            if (p2.active) {
+                setMessage('P2, select your move');
+                setPhase('2A');
+                setCurrentUser(p2);    
+            }
+            else if (p3.active) {
+                setMessage('P3, select your move');
+                setPhase('3A');
+                setCurrentUser(p3);  
+            }
+            else {
+                setMessage('P4, select your move');
+                setPhase('4A');
+                setCurrentUser(p4);  
+            }
+            
         }
 
         // 2A (P2 choose move)
@@ -1291,9 +1414,18 @@ const BSGame = (props) => {
         // 2B (P2 choose target)
         else if (phase === '2B') {
             setP2Target(target);
-            setMessage('P3, select your move');
-            setPhase('3A');
-            setCurrentUser(p3);
+
+            if (p3.active) {
+                setMessage('P3, select your move');
+                setPhase('3A');
+                setCurrentUser(p3);    
+            }
+            else {
+                setMessage('P4, select your move');
+                setPhase('4A');
+                setCurrentUser(p4); 
+            }
+            
         }
 
         // 3A (P3 choose move)
@@ -1306,9 +1438,73 @@ const BSGame = (props) => {
         // 3B (P3 choose target)
         else if (phase === '3B') {
             setP3Target(target);
-            setMessage('P4, select your move');
-            setPhase('4A');
-            setCurrentUser(p4);
+
+            if (p4.active) {
+                setMessage('P4, select your move');
+                setPhase('4A');
+                setCurrentUser(p4);    
+            }
+            else if (turnOrder[0].active) {
+                if (turnOrder[0].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[0].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[0].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK1');
+            }
+            else if (turnOrder[1].active) {
+                if (turnOrder[1].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[1].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[1].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK2');
+            }
+            else if (turnOrder[2].active) {
+                if (turnOrder[2].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[2].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[2].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK3');
+            }
+            else {
+                if (turnOrder[3].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[3].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[3].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK4');
+            }
+            
         }
 
         // 4A (P4 choose move)
@@ -1321,89 +1517,444 @@ const BSGame = (props) => {
         // 4B (P4 choose target)
         else if (phase === '4B') {
             setP4Target(target);
-
-            useMove(p1, p1Target, p1Attack)
-
-            setPhase('ATK1');
+            
+            if (turnOrder[0].active) {
+                if (turnOrder[0].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[0].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[0].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK1');
+            }
+            else if (turnOrder[1].active) {
+                if (turnOrder[1].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[1].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[1].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK2');
+            }
+            else if (turnOrder[2].active) {
+                if (turnOrder[2].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[2].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[2].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK3');
+            }
+            else {
+                if (turnOrder[3].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[3].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[3].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK4');
+            }
         }
 
         // ATK1 (fastest player attacks)
         else if (phase === 'ATK1') {
             setZeroes();
-            if (p1Statuses.length > 0) {
-                lowerStatuses(p1);
-            };
-            useMove(p2, p2Target, p2Attack);
-            setPhase('ATK2');
+
+            if (turnOrder[0].id === 1) {
+                if (p1Statuses.length > 0) {
+                    lowerStatuses(p1);
+                };    
+            }
+            else if (turnOrder[0].id === 2) {
+                if (p2Statuses.length > 0) {
+                    lowerStatuses(p2);
+                }; 
+            }
+            else if (turnOrder[0].id === 3) {
+                if (p3Statuses.length > 0) {
+                    lowerStatuses(p3);
+                }; 
+            }
+            else {
+                if (p4Statuses.length > 0) {
+                    lowerStatuses(p4);
+                }; 
+            }
+            
+            // Check Game Over before continuing
+            if (!p1.active && !p2.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P3 and P4 Win!');
+            }
+            else if (!p3.active && !p4.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P1 and P2 Win!');
+            }
+            else {
+                if (turnOrder[1].active) {
+                    if (turnOrder[1].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[1].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[1].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK2');
+                }
+                else if (turnOrder[2].active) {
+                    if (turnOrder[2].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[2].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[2].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK3');
+                }
+                else {
+                    if (turnOrder[3].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[3].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[3].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK4');
+                }    
+            }
         }
 
         // ATK2
         else if (phase === 'ATK2') {
             setZeroes();
-            if (p2Statuses.length > 0) {
-                lowerStatuses(p2);
-            };
-            useMove(p3, p3Target, p3Attack);
 
-            setPhase('ATK3');
+            if (turnOrder[1].id === 1) {
+                if (p1Statuses.length > 0) {
+                    lowerStatuses(p1);
+                };    
+            }
+            else if (turnOrder[1].id === 2) {
+                if (p2Statuses.length > 0) {
+                    lowerStatuses(p2);
+                }; 
+            }
+            else if (turnOrder[1].id === 3) {
+                if (p3Statuses.length > 0) {
+                    lowerStatuses(p3);
+                }; 
+            }
+            else {
+                if (p4Statuses.length > 0) {
+                    lowerStatuses(p4);
+                }; 
+            }
+
+            // Check Game Over before continuing
+            if (!p1.active && !p2.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P3 and P4 Win!');
+            }
+            else if (!p3.active && !p4.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P1 and P2 Win!');
+            }
+            else {
+                if (turnOrder[2].active) {
+                    if (turnOrder[2].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[2].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[2].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK3');
+                }
+                else if (turnOrder[3].active) {
+                    if (turnOrder[3].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[3].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[3].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK4');
+                }
+                else {
+                    setMessage(`Everyone regained some mana`);
+                    if (p1.active) {
+                        changeMANA(p1, -2);
+                    }
+                    if (p2.active) {
+                        changeMANA(p2, -2);
+                    }
+                    if (p3.active) {
+                        changeMANA(p3, -2);
+                    }
+                    if (p4.active) {
+                        changeMANA(p4, -2);
+                    }
+                    // Lower any burns or poisons
+                    if (p1Statuses.length > 0 && p1.active) {
+                        lowerDamageStatuses(p1);
+                    }
+                    if (p2Statuses.length > 0 && p2.active) {
+                        lowerDamageStatuses(p2);
+                    }
+                    if (p3Statuses.length > 0 && p3.active) {
+                        lowerDamageStatuses(p3);
+                    }
+                    if (p4Statuses.length > 0 && p4.active) {
+                        lowerDamageStatuses(p4);
+                    }
+
+                    // Determine next turn order
+                    setTurnOrder([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD))
+                    setPhase('ATK5');
+                }
+            }
         }
 
         // ATK3
         else if (phase === 'ATK3') {
             setZeroes();
-            if (p3Statuses.length > 0) {
-                lowerStatuses(p3);
-            };
-            useMove(p4, p4Target, p4Attack);
 
-            setPhase('ATK4');
+            if (turnOrder[2].id === 1) {
+                if (p1Statuses.length > 0) {
+                    lowerStatuses(p1);
+                };    
+            }
+            else if (turnOrder[2].id === 2) {
+                if (p2Statuses.length > 0) {
+                    lowerStatuses(p2);
+                }; 
+            }
+            else if (turnOrder[2].id === 3) {
+                if (p3Statuses.length > 0) {
+                    lowerStatuses(p3);
+                }; 
+            }
+            else {
+                if (p4Statuses.length > 0) {
+                    lowerStatuses(p4);
+                }; 
+            }
+
+            // Check Game Over before continuing
+            if (!p1.active && !p2.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P3 and P4 Win!');
+            }
+            else if (!p3.active && !p4.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P1 and P2 Win!');
+            }
+            else {
+                if (turnOrder[3].active) {
+                    if (turnOrder[3].id === 1) {
+                        useMove(p1, p1Target, p1Attack)    
+                    }
+                    else if (turnOrder[3].id === 2) {
+                        useMove(p2, p2Target, p2Attack);
+                    }
+                    else if (turnOrder[3].id === 3) {
+                        useMove(p3, p3Target, p3Attack);
+                    }
+                    else {
+                        useMove(p4, p4Target, p4Attack);
+                    }
+                    setPhase('ATK4');
+                }
+                else {
+                    setMessage(`Everyone regained some mana`);
+                    if (p1.active) {
+                        changeMANA(p1, -2);
+                    }
+                    if (p2.active) {
+                        changeMANA(p2, -2);
+                    }
+                    if (p3.active) {
+                        changeMANA(p3, -2);
+                    }
+                    if (p4.active) {
+                        changeMANA(p4, -2);
+                    }
+                    // Lower any burns or poisons
+                    if (p1Statuses.length > 0 && p1.active) {
+                        lowerDamageStatuses(p1);
+                    }
+                    if (p2Statuses.length > 0 && p2.active) {
+                        lowerDamageStatuses(p2);
+                    }
+                    if (p3Statuses.length > 0 && p3.active) {
+                        lowerDamageStatuses(p3);
+                    }
+                    if (p4Statuses.length > 0 && p4.active) {
+                        lowerDamageStatuses(p4);
+                    }
+
+                    // Determine next turn order
+                    setTurnOrder([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD))
+                    setPhase('ATK5');
+                }
+            }
         }
 
         // ATK 4
         else if (phase === 'ATK4') {
             setZeroes();
             setSubMessage(prev => {return ''});
-            if (p4Statuses.length > 0) {
-                lowerStatuses(p4);
-            };
 
-            setMessage(`Everyone regained some mana`);
-            if (p1.active) {
-                changeMANA(p1, -2);
+            if (turnOrder[3].id === 1) {
+                if (p1Statuses.length > 0) {
+                    lowerStatuses(p1);
+                };    
             }
-            if (p2.active) {
-                changeMANA(p2, -2);
+            else if (turnOrder[3].id === 2) {
+                if (p2Statuses.length > 0) {
+                    lowerStatuses(p2);
+                }; 
             }
-            if (p3.active) {
-                changeMANA(p3, -2);
+            else if (turnOrder[3].id === 3) {
+                if (p3Statuses.length > 0) {
+                    lowerStatuses(p3);
+                }; 
             }
-            if (p4.active) {
-                changeMANA(p4, -2);
+            else {
+                if (p4Statuses.length > 0) {
+                    lowerStatuses(p4);
+                }; 
             }
 
-            // Lower any burns or poisons
-            if (p1Statuses.length > 0) {
-                lowerDamageStatuses(p1);
+            // Check Game Over before continuing
+            if (!p1.active && !p2.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P3 and P4 Win!');
             }
-            if (p2Statuses.length > 0) {
-                lowerDamageStatuses(p2);
+            else if (!p3.active && !p4.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P1 and P2 Win!');
             }
-            if (p3Statuses.length > 0) {
-                lowerDamageStatuses(p3);
-            }
-            if (p4Statuses.length > 0) {
-                lowerDamageStatuses(p4);
-            }
-            setPhase('ATK5');    
+            else {
+                setMessage(`Everyone regained some mana`);
+                if (p1.active) {
+                    changeMANA(p1, -2);
+                }
+                if (p2.active) {
+                    changeMANA(p2, -2);
+                }
+                if (p3.active) {
+                    changeMANA(p3, -2);
+                }
+                if (p4.active) {
+                    changeMANA(p4, -2);
+                }
+
+                // Lower any burns or poisons
+                if (p1Statuses.length > 0 && p1.active) {
+                    lowerDamageStatuses(p1);
+                }
+                if (p2Statuses.length > 0 && p2.active) {
+                    lowerDamageStatuses(p2);
+                }
+                if (p3Statuses.length > 0 && p3.active) {
+                    lowerDamageStatuses(p3);
+                }
+                if (p4Statuses.length > 0 && p4.active) {
+                    lowerDamageStatuses(p4);
+                }
+
+                // Determine next turn order
+                setTurnOrder([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD))
+                
+                setPhase('ATK5');
+            } 
         }
 
         // ATK 5 (for any conditions, regen mana)
         else if (phase === 'ATK5') {
             setZeroes();
             setSubMessage('');
-            setMessage('P1, select your move')
-            setPhase('1A');
-            setCurrentUser(p1);
+
+            // Check Game Over before continuing
+            if (!p1.active && !p2.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P3 and P4 Win!');
+            }
+            else if (!p3.active && !p4.active) {
+                setPhase('END');
+                setMessage('Battle Over!');
+                setSubMessage('P1 and P2 Win!');
+            }
+            else {
+                if (p1.active) {
+                    setMessage('P1, select your move');
+                    setPhase('1A');
+                    setCurrentUser(p1);    
+                }
+                else {
+                    setMessage('P2, select your move');
+                    setPhase('2A');
+                    setCurrentUser(p2);
+                }    
+            }
         }
     }
 
@@ -1417,6 +1968,9 @@ const BSGame = (props) => {
             </View>
 
             <View style={styles.sceneContainer}>
+                <View style={[styles.bgScene1, {transform: [{scaleX: 11}]}]}/>
+                <View style={[styles.bgScene2, {transform: [{scaleX: 11}]}]}/> 
+
                 <View style={styles.rowContainer}>
                     <View style={styles.statContainer}>
                         <BSStatBar 
@@ -1487,6 +2041,7 @@ const BSGame = (props) => {
                     currentUser={currentUser}
                     attacks={[p1Attack, p2Attack, p3Attack, p4Attack]}
                     sprites={[p1.character.sprite,p2.character.sprite,p3.character.sprite,p4.character.sprite]}
+                    activePlayers={[p1.active, p2.active, p3.active, p4.active]}
                     onChoose={changePhase}
                     onBack={goBackPhase}
                 />}
@@ -1494,6 +2049,19 @@ const BSGame = (props) => {
                     <TouchableOpacity style={styles.nextButton} onPress={() => changePhase('')}>
                         <Text>Next</Text>
                     </TouchableOpacity>
+                }
+                {phase.charAt(1) === 'N' &&
+                    <View>
+                        <TouchableOpacity style={styles.nextButton} onPress={handleReset}>
+                            <Text>Play Again</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.nextButton} onPress={handleChangeChar}>
+                            <Text>Change Characters</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.nextButton, styles.offButton]} onPress={handleQuit}>
+                            <Text>Quit</Text>
+                        </TouchableOpacity>    
+                    </View>
                 }
             </View>
         </View>
@@ -1581,7 +2149,7 @@ const styles = StyleSheet.create({
     nextButton: {
         padding: 5,
         margin: 5,
-        width: 125,
+        width: 150,
         height: 50,
         borderRadius: 10,
         alignItems: 'center',
@@ -1591,6 +2159,31 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.75,
         shadowRadius: 2
+    },
+    offButton: {
+        backgroundColor: Colors.accentOff
+    },
+    bgScene1: {
+        height: 20,
+        width: 20,
+        position: 'absolute',
+        borderColor: Colors.primary,
+        borderWidth: 2,
+        borderRadius: 10,
+        backgroundColor: Colors.primaryOff,
+        top: 110,
+        right: 100
+    },
+    bgScene2: {
+        height: 20,
+        width: 20,
+        position: 'absolute',
+        borderColor: Colors.accent,
+        borderWidth: 2,
+        borderRadius: 10,
+        backgroundColor: Colors.accentOff,
+        bottom: 0,
+        left: 97
     }
 })
 

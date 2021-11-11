@@ -51,7 +51,7 @@ const BattleSimulator = () => {
         <View style={styles.wholeContainer}>
             {mode === 0 && <BSStart onSubmit={handleModeOne} />}
             {mode === 1 && <BSCharSelect humanPlayers={humanPlayers} onBack={handleModeZero} onStart={handleModeTwo} />}
-            {mode === 2 && <BSGame chosenCharacters={characterArray} />}
+            {mode === 2 && <BSGame humanPlayers={humanPlayers} chosenCharacters={characterArray} onChange={handleModeOne} onQuit={handleModeZero} />}
         </View>
     );
 }

@@ -48,7 +48,7 @@ export default {
             },
             {
                 name: 'Slime Drench',
-                manaCost: 8,
+                manaCost: 7,
                 desc: 'Covers both targets in slime, lowering their Speed by 6 for 2 turns'
             },
             {
@@ -118,7 +118,7 @@ export default {
             {
                 name: 'Purifying Pulse',
                 manaCost: 10,
-                desc: 'Boost all allies Defense by 1 for 2 turns, cures all ailments.'
+                desc: 'Boost all allies Defense by 1 for 3 turns, cures all ailments.'
             },
             {
                 name: 'ULT: Water Surge',
