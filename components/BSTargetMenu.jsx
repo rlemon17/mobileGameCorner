@@ -8,8 +8,8 @@ import BSCharacters from './BSCharacters';
 const BSTargetMenu = (props) => {
 
     // For displaying chooseable target boxes
-    const single = ['Tackle', 'Ember', 'Lava Snipe', 'Water Gun'];
-    const multi = ['Slime Drench', 'Acid', 'ULT: Toxic Acid', 'ULT: Eruption', 'ULT: Water Surge']
+    const single = ['Tackle', 'Ember', 'Lava Snipe', 'Water Gun', 'Smoke Rush', 'Blood Blitz'];
+    const multi = ['Slime Drench', 'Acid', 'ULT: Toxic Acid', 'ULT: Eruption', 'ULT: Water Surge', 'Shadow Burst', 'Ice Barrage'];
     const supp = ['Healing Rain'];
     const multiSupp = ['Purifying Pulse'];
     const self = ['Heat Up']

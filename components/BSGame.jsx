@@ -149,7 +149,7 @@ const BSGame = (props) => {
             curSPD: props.chosenCharacters[3].spd,
             curMANA: Math.floor(props.chosenCharacters[3].mana/2)
         });
-        setMessage('P1, select your move');
+        setMessage('Rematch!');
         setSubMessage('');
         setCurrentUser(p1);
 
@@ -158,7 +158,7 @@ const BSGame = (props) => {
         setP3Statuses([]);
         setP4Statuses([]);
 
-        setPhase('1A')
+        setPhase('0T')
     }
 
     const handleChangeChar = () => {
@@ -310,20 +310,19 @@ const BSGame = (props) => {
         }
     }
 
-    // Undo any status effects
-    const undoStatus = (userData, status) => {
-        let difference = 0;
+    // Undo any status effects. Appended value in object tells us how much to restore/reduce to return to normal
+    const undoStatus = (userData, status, value) => {
         if (status === 'atkUp') {
-            difference = userData.curATK - userData.character.atk;
-            changeATK(userData, difference);
+            changeATK(userData, value);
         }
         else if (status === 'defUp') {
-            difference = userData.curDEF - userData.character.def;
-            changeDEF(userData, difference);
+            changeDEF(userData, value);
         }
         else if (status === 'spdDown') {
-            difference = userData.curSPD - userData.character.spd;
-            changeSPD(userData, difference);
+            changeSPD(userData, value);
+        }
+        else if (status === 'atkDown') {
+            changeATK(userData, value);
         }
     }
 
@@ -341,7 +340,7 @@ const BSGame = (props) => {
                         status.turns = status.turns-1;
 
                         if (status.turns <= 0) {
-                            undoStatus(userData, status.name);
+                            undoStatus(p1, status.name, status.value);
                         }
                     }
                 })
@@ -359,7 +358,7 @@ const BSGame = (props) => {
                         status.turns = status.turns-1;
 
                         if (status.turns <= 0) {
-                            undoStatus(userData, status.name);
+                            undoStatus(p2, status.name, status.value);
                         }
                     }
                 })
@@ -377,7 +376,7 @@ const BSGame = (props) => {
                         status.turns = status.turns-1;
 
                         if (status.turns <= 0) {
-                            undoStatus(userData, status.name);
+                            undoStatus(p3, status.name, status.value);
                         }
                     }
                 })
@@ -395,7 +394,7 @@ const BSGame = (props) => {
                         status.turns = status.turns-1;
 
                         if (status.turns <= 0) {
-                            undoStatus(userData, status.name);
+                            undoStatus(p4, status.name, status.value);
                         }
                     }
                 })
@@ -703,25 +702,62 @@ const BSGame = (props) => {
             return;
         }
 
-        setMessage(`${attackerData.character.name} used ${moveName}!`)
-        let damage = 0;
-
         // Get updated stats for attacker and target, in case stats were changed mid round
+        // Also check if user is Frozen, 50% chance to skip turn
         let attackerDataUpdated = p1;
         let targetDataUpdated = p3;
 
         if (attackerData.id === 1) {
             attackerDataUpdated = p1;
+            for (let i = 0; i < p1Statuses.length; i++) {
+                if (p1Statuses[i].name === 'frozen') {
+                    if (Math.floor(Math.random()*10) < 5) {
+                        setMessage(`${attackerData.character.name} is too numb to move!`);
+                        setSubMessage('');
+                        return;
+                    }
+                }
+            }
         }
         else if (attackerData.id === 2) {
             attackerDataUpdated = p2;
+            for (let i = 0; i < p2Statuses.length; i++) {
+                if (p2Statuses[i].name === 'frozen') {
+                    if (Math.floor(Math.random()*10) < 5) {
+                        setMessage(`${attackerData.character.name} is too numb to move!`);
+                        setSubMessage('');
+                        return;
+                    }
+                }
+            }
         }
         else if (attackerData.id === 3) {
             attackerDataUpdated = p3;
+            for (let i = 0; i < p3Statuses.length; i++) {
+                if (p3Statuses[i].name === 'frozen') {
+                    if (Math.floor(Math.random()*10) < 5) {
+                        setMessage(`${attackerData.character.name} is too numb to move!`);
+                        setSubMessage('');
+                        return;
+                    }
+                }
+            }
         }
         else {
             attackerDataUpdated = p4;
+            for (let i = 0; i < p4Statuses.length; i++) {
+                if (p4Statuses[i].name === 'frozen') {
+                    if (Math.floor(Math.random()*10) < 5) {
+                        setMessage(`${attackerData.character.name} is too numb to move!`);
+                        setSubMessage('');
+                        return;
+                    }
+                }
+            }
         }
+
+        setMessage(`${attackerData.character.name} used ${moveName}!`)
+        let damage = 0;
 
         // Set animation for target
         if (targetData.id === 1) {
@@ -770,7 +806,7 @@ const BSGame = (props) => {
                 if (foe1.id === 1) {
                     setP1Animation(BSMoves[moveName]);
                     setP2Animation(BSMoves[moveName]);
-                    changeSPD(foe1, 6);
+                    
                     setP1Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
                             if (prev[i].name === 'spdDown') {
@@ -779,15 +815,17 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeSPD(foe1, 6);
                         return [
                             ...prev,
                             {
                                 name: 'spdDown',
-                                turns: 2
+                                turns: 2,
+                                value: -6
                             }
                         ]
                     })
-                    changeSPD(foe2, 6);
+                    
                     setP2Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
                             if (prev[i].name === 'spdDown') {
@@ -796,11 +834,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeSPD(foe2, 6);
                         return [
                             ...prev,
                             {
                                 name: 'spdDown',
-                                turns: 2
+                                turns: 2,
+                                value: -6
                             }
                         ]
                     })
@@ -808,7 +848,7 @@ const BSGame = (props) => {
                 else {
                     setP3Animation(BSMoves[moveName]);
                     setP4Animation(BSMoves[moveName]);
-                    changeSPD(foe1, 6);
+                    
                     setP3Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
                             if (prev[i].name === 'spdDown') {
@@ -817,15 +857,17 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeSPD(foe1, 6);
                         return [
                             ...prev,
                             {
                                 name: 'spdDown',
-                                turns: 2
+                                turns: 2,
+                                value: -6
                             }
                         ]
                     })
-                    changeSPD(foe2, 6);
+                    
                     setP4Statuses(prev => {
                         for (let i = 0; i < prev.length; i++) {
                             if (prev[i].name === 'spdDown') {
@@ -834,11 +876,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeSPD(foe2, 6);
                         return [
                             ...prev,
                             {
                                 name: 'spdDown',
-                                turns: 2
+                                turns: 2,
+                                value: -6
                             }
                         ]
                     })
@@ -1050,7 +1094,6 @@ const BSGame = (props) => {
             // Heat Up
             else if (moveName === 'Heat Up') {
                 setSubMessage(`${attackerData.character.name}'s Attack increases for the next turn`);
-                changeATK(attackerData, -3);
 
                 if (attackerData.id === 1) {
                     setP1Statuses(prev => {
@@ -1061,11 +1104,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeATK(attackerData, -3);
                         return [
                             ...prev,
                             {
                                 name: 'atkUp',
-                                turns: 2
+                                turns: 2,
+                                value: 3
                             }
                         ]
                     })
@@ -1079,11 +1124,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeATK(attackerData, -3);
                         return [
                             ...prev,
                             {
                                 name: 'atkUp',
-                                turns: 2
+                                turns: 2,
+                                value: 3
                             }
                         ]
                     })
@@ -1097,11 +1144,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeATK(attackerData, -3);
                         return [
                             ...prev,
                             {
                                 name: 'atkUp',
-                                turns: 2
+                                turns: 2,
+                                value: 3
                             }
                         ]
                     })
@@ -1115,11 +1164,13 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
+                        changeATK(attackerData, -3);
                         return [
                             ...prev,
                             {
                                 name: 'atkUp',
-                                turns: 2
+                                turns: 2,
+                                value: 3
                             }
                         ]
                     })
@@ -1148,26 +1199,12 @@ const BSGame = (props) => {
                 }
                 
                 // Determine 70% burn chance
+                // Foe 1
                 if (Math.floor(Math.random()*10) < 7) {
-                    setSubMessage(prev => prev + `. Both were burned`);
+                    setSubMessage(prev => prev + `. ${foe1.character.name} was burned`);
+
                     if (foe1.id === 1) {
                         setP1Statuses(prev => {
-                            for (let i = 0; i < prev.length; i++) {
-                                if (prev[i].name === 'burn') {
-                                    let newArr = [...prev];
-                                    newArr[i].turns = 2;
-                                    return newArr;
-                                }
-                            }
-                            return [
-                                ...prev,
-                                {
-                                    name: 'burn',
-                                    turns: 2
-                                }
-                            ]
-                        })
-                        setP2Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
                                     let newArr = [...prev];
@@ -1201,6 +1238,31 @@ const BSGame = (props) => {
                                 }
                             ]
                         })
+                    }
+                }
+                // Foe 2
+                if (Math.floor(Math.random()*10) < 7) {
+                    setSubMessage(prev => prev + `. ${foe2.character.name} was burned`);
+
+                    if (foe1.id === 1) {
+                        setP2Statuses(prev => {
+                            for (let i = 0; i < prev.length; i++) {
+                                if (prev[i].name === 'burn') {
+                                    let newArr = [...prev];
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            return [
+                                ...prev,
+                                {
+                                    name: 'burn',
+                                    turns: 2
+                                }
+                            ]
+                        })
+                    }
+                    else {
                         setP4Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
@@ -1251,7 +1313,7 @@ const BSGame = (props) => {
                 if (foe1 === p3) {
                     setP1Animation(BSMoves[moveName]);
                     setP2Animation(BSMoves[moveName]);
-                    changeDEF(p1, -1);
+                    
                     setP1Statuses(prev => {
                         let newArr = [...prev];
                         newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
@@ -1262,12 +1324,12 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
-
-                        newArr.push({name: 'defUp', turns: 3});
+                        changeDEF(p1, -1);
+                        newArr.push({name: 'defUp', turns: 3, value: 1});
 
                         return newArr
                     })
-                    changeDEF(p2, -1);
+                    
                     setP2Statuses(prev => {
                         let newArr = [...prev];
                         newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
@@ -1278,8 +1340,8 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
-
-                        newArr.push({name: 'defUp', turns: 3});
+                        changeDEF(p2, -1);
+                        newArr.push({name: 'defUp', turns: 3, value: 1});
 
                         return newArr
                     })
@@ -1287,7 +1349,7 @@ const BSGame = (props) => {
                 else {
                     setP3Animation(BSMoves[moveName]);
                     setP4Animation(BSMoves[moveName]);
-                    changeDEF(p3, -1);
+                    
                     setP3Statuses(prev => {
                         let newArr = [...prev];
                         newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
@@ -1298,12 +1360,12 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
-
-                        newArr.push({name: 'defUp', turns: 3});
+                        changeDEF(p3, -1);
+                        newArr.push({name: 'defUp', turns: 3, value: 1});
 
                         return newArr
                     })
-                    changeDEF(p4, -1);
+                    
                     setP4Statuses(prev => {
                         let newArr = [...prev];
                         newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
@@ -1314,8 +1376,8 @@ const BSGame = (props) => {
                                 return newArr;
                             }
                         }
-
-                        newArr.push({name: 'defUp', turns: 3});
+                        changeDEF(p4, -1);
+                        newArr.push({name: 'defUp', turns: 3, value: 1});
 
                         return newArr
                     })
@@ -1373,17 +1435,102 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
-                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`);
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage.`);
 
                 if (foe1.id === 1) {
                     setP1Animation(BSMoves[moveName]);
                     setP2Animation(BSMoves[moveName]);
+
+                    // 40% chance of lowering attack
+                    // Foe 1
+                    if (Math.floor(Math.random()*10) < 3) {
+                        setSubMessage(prev => prev + ` ${foe1.character.name}'s Attack was lowered.`)
+                        setP1Statuses(prev => {
+                            let newArr = [...prev];
+                            for (let i = 0; i < newArr.length; i++) {
+                                if (newArr[i].name === 'atkDown') {
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            changeATK(p1, 2);
+                            newArr.push({
+                                name: 'atkDown',
+                                turns: 2,
+                                value: -2
+                            });
+                            return newArr;
+                        })
+                    }
+
+                    // Foe 2
+                    if (Math.floor(Math.random()*10) < 3) {
+                        setSubMessage(prev => prev + ` ${foe2.character.name}'s Attack was lowered.`)
+                        setP2Statuses(prev => {
+                            let newArr = [...prev];
+                            for (let i = 0; i < newArr.length; i++) {
+                                if (newArr[i].name === 'atkDown') {
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            changeATK(p2, 2);
+                            newArr.push({
+                                name: 'atkDown',
+                                turns: 2,
+                                value: -2
+                            });
+                            return newArr;
+                        })
+                    }
                 }
                 else {
                     setP3Animation(BSMoves[moveName]);
                     setP4Animation(BSMoves[moveName]);
-                }
 
+                    // 30% chance of lowering attack
+                    // Foe 1
+                    if (Math.floor(Math.random()*10) < 3) {
+                        setSubMessage(prev => prev + ` ${foe1.character.name}'s Attack was lowered.`)
+                        setP3Statuses(prev => {
+                            let newArr = [...prev];
+                            for (let i = 0; i < newArr.length; i++) {
+                                if (newArr[i].name === 'atkDown') {
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            changeATK(p3, 2);
+                            newArr.push({
+                                name: 'atkDown',
+                                turns: 2,
+                                value: -2
+                            });
+                            return newArr;
+                        })
+                    }
+
+                    // Foe 2
+                    if (Math.floor(Math.random()*10) < 3) {
+                        setSubMessage(prev => prev + ` ${foe2.character.name}'s Attack was lowered.`)
+                        setP4Statuses(prev => {
+                            let newArr = [...prev];
+                            for (let i = 0; i < newArr.length; i++) {
+                                if (newArr[i].name === 'atkDown') {
+                                    newArr[i].turns = 2;
+                                    return newArr;
+                                }
+                            }
+                            changeATK(p4, 2);
+                            newArr.push({
+                                name: 'atkDown',
+                                turns: 2,
+                                value: -2
+                            });
+                            return newArr;
+                        })
+                    }
+                }
                 changeMANA(attackerData, attackerData.character.moves[1].manaCost);
                 return;
             }
@@ -1413,6 +1560,7 @@ const BSGame = (props) => {
                 changeMANA(attackerData, attackerData.character.moves[2].manaCost);
                 return;
             }
+            // Ice Barrage
             else {
                 damage = getDamage(attackerDataUpdated, foe1);
                 changeHP(foe1, damage);
@@ -1420,7 +1568,7 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
-                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`);
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage. Both were frozen`);
 
                 if (foe1.id === 1) {
                     setP1Animation(BSMoves[moveName]);
@@ -1429,6 +1577,67 @@ const BSGame = (props) => {
                 else {
                     setP3Animation(BSMoves[moveName]);
                     setP4Animation(BSMoves[moveName]);
+                }
+
+                if (foe1.id === 1) {
+                    setP1Statuses(prev => {
+                        let newArr = [...prev];
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'frozen') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        newArr.push({
+                            name: 'frozen',
+                            turns: 2
+                        });
+                        return newArr;
+                    });
+                    setP2Statuses(prev => {
+                        let newArr = [...prev];
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'frozen') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        newArr.push({
+                            name: 'frozen',
+                            turns: 2
+                        });
+                        return newArr;
+                    });
+                }
+                else {
+                    setP3Statuses(prev => {
+                        let newArr = [...prev];
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'frozen') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        newArr.push({
+                            name: 'frozen',
+                            turns: 2
+                        });
+                        return newArr;
+                    });
+                    setP4Statuses(prev => {
+                        let newArr = [...prev];
+                        for (let i = 0; i < newArr.length; i++) {
+                            if (newArr[i].name === 'frozen') {
+                                newArr[i].turns = 2;
+                                return newArr;
+                            }
+                        }
+                        newArr.push({
+                            name: 'frozen',
+                            turns: 2
+                        });
+                        return newArr;
+                    });
                 }
 
                 changeMANA(attackerData, attackerData.character.moves[3].manaCost);
@@ -1922,11 +2131,19 @@ const BSGame = (props) => {
             setPhase('1B');
         }
 
-        // 0T (Edge case for P1 being a CPU and game starts)
+        // 0T (To help handle edge case for P1 being a CPU and game starts)
         else if (phase === '0T') {
-            setMessage('P1 CPU has chosen their move');
-            setPhase('1T');
-            cpuMove(p1);
+            if (isHumanPlayer[0]) {
+                setMessage('P1, select your move');
+                setPhase('1A');
+                setCurrentUser(p1); 
+            }
+            else {
+                setMessage('P1 CPU has chosen their move');
+                setPhase('1T');
+                cpuMove(p1);    
+            }
+            
         }
 
         // 1T (CPU P1 chooses move and target)
