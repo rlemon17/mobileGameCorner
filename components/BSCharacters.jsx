@@ -145,7 +145,7 @@ export default {
             {
                 name: 'Shadow Burst',
                 manaCost: 6,
-                desc: 'Multi-target attack. 40% chance to lower Attack by 2 for 2 turns'
+                desc: 'Multi-target attack. 30% chance to lower Attack by 2 for 2 turns'
             },
             {
                 name: 'Blood Blitz',
