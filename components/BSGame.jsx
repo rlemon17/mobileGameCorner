@@ -11,10 +11,9 @@ import BSMoveMenu from './BSMoveMenu';
 import BSTargetMenu from './BSTargetMenu';
 import BSDamage from './BSDamage';
 import BSMoveAnimation from './BSMoveAnimation';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const BSGame = (props) => {
-    const humanPlayers = props.humanPlayers;
+    const isHumanPlayer = props.humanPlayers;
 
     const [p1, setP1] = useState({
         id: 1,
@@ -60,10 +59,10 @@ const BSGame = (props) => {
         curMANA: Math.floor(props.chosenCharacters[3].mana/2)
     });
 
-    const [message, setMessage] = useState('P1, select your move');
+    const [message, setMessage] = useState(props.firstMsg);
     const [subMessage, setSubMessage] = useState('');
 
-    const [phase, setPhase] = useState('1A');
+    const [phase, setPhase] = useState(props.firstPhase);
     const [currentUser, setCurrentUser] = useState(p1);
 
     const [p1Target, setP1Target] = useState('');
@@ -163,7 +162,7 @@ const BSGame = (props) => {
     }
 
     const handleChangeChar = () => {
-        props.onChange(humanPlayers);
+        props.onChange(isHumanPlayer);
     }
 
     const handleQuit = () => {
@@ -421,12 +420,12 @@ const BSGame = (props) => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
                         damage = damage + 2;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage.`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
                         damage = damage + 1;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage.`);
                     }
                 })
                 changeHP(userData, damage);
@@ -443,12 +442,12 @@ const BSGame = (props) => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
                         damage = damage + 2;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage.`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
                         damage = damage + 1;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage.`);
                     }
                 })
                 changeHP(userData, damage);
@@ -465,12 +464,12 @@ const BSGame = (props) => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
                         damage = damage + 2;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage.`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
                         damage = damage + 1;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage.`);
                     }
                 })
                 changeHP(userData, damage);
@@ -487,12 +486,12 @@ const BSGame = (props) => {
                     if (status.name === 'burn') {
                         status.turns = status.turns-1;
                         damage = damage + 2;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 2 ${status.name} damage.`);
                     }
                     else if (status.name === 'poison') {
                         status.turns = status.turns-1;
                         damage = damage + 1;
-                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage`);
+                        setSubMessage(prev => prev + ` ${userData.character.name} took 1 ${status.name} damage.`);
                     }
                 })
                 changeHP(userData, damage);
@@ -596,9 +595,14 @@ const BSGame = (props) => {
             setP1Damage(value);
             setP1(prevState => {
                 newValue = prevState.curHP - value;
+                newIsActive = prevState.active;
                 if (newValue <= 0) {
                     newValue = 0;
                     newIsActive = false;
+                }
+                // Edge case if defeated and attepted to heal
+                if (!prevState.active) {
+                    newValue = 0;
                 }
                 if (newValue > prevState.character.hp) {
                     newValue = prevState.character.hp;
@@ -614,9 +618,14 @@ const BSGame = (props) => {
             setP2Damage(value);
             setP2(prevState => {
                 newValue = prevState.curHP - value;
+                newIsActive = prevState.active;
                 if (newValue <= 0) {
                     newValue = 0;
                     newIsActive = false;
+                }
+                // Edge case if defeated and attepted to heal
+                if (!prevState.active) {
+                    newValue = 0;
                 }
                 if (newValue > prevState.character.hp) {
                     newValue = prevState.character.hp;
@@ -632,9 +641,14 @@ const BSGame = (props) => {
             setP3Damage(value);
             setP3(prevState => {
                 newValue = prevState.curHP - value;
+                newIsActive = prevState.active;
                 if (newValue <= 0) {
                     newValue = 0;
                     newIsActive = false;
+                }
+                // Edge case if defeated and attepted to heal
+                if (!prevState.active) {
+                    newValue = 0;
                 }
                 if (newValue > prevState.character.hp) {
                     newValue = prevState.character.hp;
@@ -650,9 +664,14 @@ const BSGame = (props) => {
             setP4(prevState => {
                 setP4Damage(value);
                 newValue = prevState.curHP - value;
+                newIsActive = prevState.active;
                 if (newValue <= 0) {
                     newValue = 0;
                     newIsActive = false;
+                }
+                // Edge case if defeated and attepted to heal
+                if (!prevState.active) {
+                    newValue = 0;
                 }
                 if (newValue > prevState.character.hp) {
                     newValue = prevState.character.hp;
@@ -666,8 +685,10 @@ const BSGame = (props) => {
         }
     };
 
+    // ================================================================================ 
     // ================================================================================
     // ============================= Master Move Function =============================
+    // ================================================================================ 
     // ================================================================================ 
     // Change target's HP, attacker's mana, inflict any statuses
     const useMove = (attackerData, targetData, moveName) => {
@@ -721,7 +742,7 @@ const BSGame = (props) => {
         }
 
         // Handle all basic Attacks
-        if (moveName === 'Tackle' || moveName === 'Ember' || moveName === 'Water Gun') {
+        if (moveName === 'Tackle' || moveName === 'Ember' || moveName === 'Water Gun' || moveName === 'Smoke Rush') {
             damage = getDamage(attackerDataUpdated, targetDataUpdated);
             changeHP(targetData, damage);
             setSubMessage(`${targetData.character.name} took ${damage} damage`);
@@ -1115,14 +1136,21 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
-                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`)
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`);
+                
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
                 
                 // Determine 70% burn chance
                 if (Math.floor(Math.random()*10) < 7) {
                     setSubMessage(prev => prev + `. Both were burned`);
                     if (foe1.id === 1) {
-                        setP1Animation(BSMoves[moveName]);
-                        setP2Animation(BSMoves[moveName]);
                         setP1Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
@@ -1157,8 +1185,6 @@ const BSGame = (props) => {
                         })
                     }
                     else {
-                        setP3Animation(BSMoves[moveName]);
-                        setP4Animation(BSMoves[moveName]);
                         setP3Statuses(prev => {
                             for (let i = 0; i < prev.length; i++) {
                                 if (prev[i].name === 'burn') {
@@ -1319,6 +1345,15 @@ const BSGame = (props) => {
                 damage2 = getDamage(attackerDataUpdated, foe2);
                 changeHP(foe2, damage2);
 
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
+
                 changeHP(ally1, -3);
                 changeHP(ally2, -3);
 
@@ -1327,6 +1362,512 @@ const BSGame = (props) => {
                 changeMANA(attackerData, attackerData.character.moves[3].manaCost);
                 return;
             }
+        }
+        // ============================== Zaru ==============================
+        else if (attackerData.character.name === 'Zaru') {
+            // Shadow Burst
+            if (moveName === 'Shadow Burst') {
+                damage = getDamage(attackerDataUpdated, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerDataUpdated, foe2);
+                changeHP(foe2, damage2);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`);
+
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
+
+                changeMANA(attackerData, attackerData.character.moves[1].manaCost);
+                return;
+            }
+            // Blood Blitz
+            else if (moveName === 'Blood Blitz') {
+                damage = getDamage(attackerDataUpdated, targetDataUpdated);
+                changeHP(targetData, damage);
+
+                let healAmount = (Math.ceil(damage/2))*-1;
+                changeHP(attackerData, healAmount);
+
+                if (attackerData.id === 1) {
+                    setP1Animation(BSMoves['Heal']);
+                }
+                else if (attackerData.id === 2) {
+                    setP2Animation(BSMoves['Heal']);
+                }
+                else if (attackerData.id === 3) {
+                    setP3Animation(BSMoves['Heal']);
+                }
+                else {
+                    setP4Animation(BSMoves['Heal']);
+                }
+
+                setSubMessage(`${targetData.character.name} took ${damage} damage, ${attackerData.character.name} healed ${healAmount*-1} HP`);
+            
+                changeMANA(attackerData, attackerData.character.moves[2].manaCost);
+                return;
+            }
+            else {
+                damage = getDamage(attackerDataUpdated, foe1);
+                changeHP(foe1, damage);
+
+                damage2 = getDamage(attackerDataUpdated, foe2);
+                changeHP(foe2, damage2);
+
+                setSubMessage(`${foe1.character.name} took ${damage} damage, ${foe2.character.name} took ${damage2} damage`);
+
+                if (foe1.id === 1) {
+                    setP1Animation(BSMoves[moveName]);
+                    setP2Animation(BSMoves[moveName]);
+                }
+                else {
+                    setP3Animation(BSMoves[moveName]);
+                    setP4Animation(BSMoves[moveName]);
+                }
+
+                changeMANA(attackerData, attackerData.character.moves[3].manaCost);
+                return;
+            }
+        }
+    }
+
+    // ============================================================================
+    // ================================ CPU MOVES =================================
+    // ============================================================================
+
+    // Slime CPU
+    const cpuSlime = (userData) => {
+        let move = '';
+        let target = '';
+        let possibleMoves = [0];
+
+        // Figure out foes and allies
+        let self = p1;
+        let ally = p2;
+        let foe1 = p3;
+        let foe2 = p4;
+
+        if (userData.id === 2) {
+            self = p2;
+            ally = p1;
+        }
+        else if (userData.id === 3) {
+            self = p3;
+            ally = p4;
+            foe1 = p1;
+            foe2 = p2;
+        }
+        else if (userData.id === 4) {
+            self = p4;
+            ally = p3;
+            foe1 = p1;
+            foe2 = p2;
+        }
+
+        // Making sure CPU doesn't use Slime Drench again
+        let canUseSlimeDrench = true;
+        if (foe1.id === 1) {
+            for (let i = 0; i < p2Statuses.length; i++) {
+                if (p2Statuses[i].name === 'spdDown') {
+                    canUseSlimeDrench = false;
+                }
+            }
+        }
+        else {
+            for (let i = 0; i < p4Statuses.length; i++) {
+                if (p4Statuses[i].name === 'spdDown') {
+                    canUseSlimeDrench = false;
+                }
+            }
+        }
+
+        // For more incentive to use ULT
+        let ultReady = false;
+
+        // Determine if other moves are usable
+        for (let i = 1; i < userData.character.moves.length; i++) {
+            // Add moves if enough mana
+            if (self.curMANA >= userData.character.moves[i].manaCost) {
+                // Edge case for Slime Drench
+                if (userData.character.moves[i].name === 'Slime Drench') {
+                    if (canUseSlimeDrench) {
+                        possibleMoves.push(i);
+                    }
+                }
+                // Edge case for ULT
+                else if (userData.character.moves[i].name === 'ULT: Toxic Acid') {
+                    if (self.curHP <= Math.floor(userData.character.hp*0.4)) {
+                        possibleMoves.push(i);
+                        ultReady = true;
+                    }
+                }
+                else {
+                    possibleMoves.push(i);
+                } 
+            }
+        }
+
+        // Determine target
+        if (Math.floor(Math.random()*2) === 0) {
+            if (foe1.active) {
+                target = foe1;    
+            }
+            else {
+                target = foe2;
+            }
+        }
+        else {
+            if (foe2.active) {
+                target = foe2;    
+            }
+            else {
+                target = foe1;
+            }
+        }
+
+        // Determine move; pick random index from possible moves array
+        let choice = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
+        move = userData.character.moves[choice].name;
+
+        // If below 70% mana, 70% chance of saving and just using basic attack
+        if (self.curMANA < Math.floor(userData.character.mana*0.7)) {
+            if (Math.floor(Math.random()*10) < 7) {
+                move = userData.character.moves[0].name;
+            }
+        }
+
+        // If ULT was ready, 80% chance to just use it
+        if (ultReady) {
+            if (Math.floor(Math.random()*10) < 8) {
+                move = userData.character.moves[3].name;    
+            }
+        }
+
+        return [move, target];
+    }
+
+    // Fire Slime CPU
+    const cpuFireSlime = (userData) => {
+        let move = '';
+        let target = '';
+        let possibleMoves = [0];
+
+        // Figure out foes and allies
+        let self = p1;
+        let ally = p2;
+        let foe1 = p3;
+        let foe2 = p4;
+
+        if (userData.id === 2) {
+            self = p2;
+            ally = p1;
+        }
+        else if (userData.id === 3) {
+            self = p3;
+            ally = p4;
+            foe1 = p1;
+            foe2 = p2;
+        }
+        else if (userData.id === 4) {
+            self = p4;
+            ally = p3;
+            foe1 = p1;
+            foe2 = p2;
+        }
+
+        // Making sure CPU doesn't use Heat Up again
+        let canUseHeatUp = true;
+        if (self.id === 1) {
+            for (let i = 0; i < p1Statuses.length; i++) {
+                if (p1Statuses[i].name === 'atkUp') {
+                    canUseHeatUp = false;
+                }
+            }
+        }
+        else if (self.id === 2) {
+            for (let i = 0; i < p2Statuses.length; i++) {
+                if (p2Statuses[i].name === 'atkUp') {
+                    canUseHeatUp = false;
+                }
+            }
+        }
+        else if (self.id === 3) {
+            for (let i = 0; i < p3Statuses.length; i++) {
+                if (p3Statuses[i].name === 'atkUp') {
+                    canUseHeatUp = false;
+                }
+            }
+        }
+        else {
+            for (let i = 0; i < p4Statuses.length; i++) {
+                if (p4Statuses[i].name === 'atkUp') {
+                    canUseHeatUp = false;
+                }
+            }
+        }
+
+        // For more incentive to use ULT
+        let ultReady = false;
+
+        // Determine if other moves are usable
+        for (let i = 1; i < userData.character.moves.length; i++) {
+            // Add the move if enough mana
+            if (self.curMANA >= userData.character.moves[i].manaCost) {
+                // Edge case for Heat Up
+                if (userData.character.moves[i].name === 'Heat Up') {
+                    if (canUseHeatUp) {
+                        possibleMoves.push(i);
+                    }
+                }
+                // Edge case for ULT
+                else if (userData.character.moves[i].name === 'ULT: Eruption') {
+                    if (self.curHP <= Math.floor(userData.character.hp*0.4)) {
+                        possibleMoves.push(i);
+                        ultReady = true;
+                    }
+                }
+                else {
+                    possibleMoves.push(i);
+                }
+            }
+        }
+
+        // Determine target
+        if (Math.floor(Math.random()*2) === 0) {
+            if (foe1.active) {
+                target = foe1;    
+            }
+            else {
+                target = foe2;
+            }
+        }
+        else {
+            if (foe2.active) {
+                target = foe2;    
+            }
+            else {
+                target = foe1;
+            }
+        }
+
+        // Determine move; pick random index from possible moves array
+        let choice = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
+        move = userData.character.moves[choice].name;
+
+        // If below 70% mana, 70% chance of saving and just using basic attack
+        if (self.curMANA < Math.floor(userData.character.mana*0.7)) {
+            if (Math.floor(Math.random()*10) < 7) {
+                move = userData.character.moves[0].name;
+            }
+        }
+
+        // If ULT was ready, 80% chance to just use it
+        if (ultReady) {
+            if (Math.floor(Math.random()*10) < 8) {
+                move = userData.character.moves[3].name;    
+            }
+        }
+
+        // If using Heat Up, target should be self
+        if (move === 'Heat Up') {
+            target = self;
+        }
+
+        return [move, target];
+    }
+
+    // Water Slime CPU
+    const cpuWaterSlime = (userData) => {
+        let move = '';
+        let target = '';
+        let possibleMoves = [0];
+
+        // Figure out foes and allies
+        let self = p1;
+        let ally = p2;
+        let foe1 = p3;
+        let foe2 = p4;
+
+        if (userData.id === 2) {
+            self = p2;
+            ally = p1;
+        }
+        else if (userData.id === 3) {
+            self = p3;
+            ally = p4;
+            foe1 = p1;
+            foe2 = p2;
+        }
+        else if (userData.id === 4) {
+            self = p4;
+            ally = p3;
+            foe1 = p1;
+            foe2 = p2;
+        }
+
+        // Making sure CPU doesn't use Purifying Pulse again
+        let canUsePurifying = true;
+        if (self.id === 1) {
+            for (let i = 0; i < p1Statuses.length; i++) {
+                if (p1Statuses[i].name === 'defUp') {
+                    canUsePurifying = false;
+                }
+            }
+        }
+        else if (self.id === 2) {
+            for (let i = 0; i < p2Statuses.length; i++) {
+                if (p2Statuses[i].name === 'defUp') {
+                    canUsePurifying = false;
+                }
+            }
+        }
+        else if (self.id === 3) {
+            for (let i = 0; i < p3Statuses.length; i++) {
+                if (p3Statuses[i].name === 'defUp') {
+                    canUsePurifying = false;
+                }
+            }
+        }
+        else {
+            for (let i = 0; i < p4Statuses.length; i++) {
+                if (p4Statuses[i].name === 'defUp') {
+                    canUsePurifying = false;
+                }
+            }
+        }
+
+        // For more incentive to use ULT
+        let ultReady = false;
+
+        // Determine if other moves are usable
+        for (let i = 1; i < userData.character.moves.length; i++) {
+            // Add move if enough mana
+            if (self.curMANA >= userData.character.moves[i].manaCost) {
+                // Edge case for Purifying Pulse
+                if (userData.character.moves[i].name === 'Purifying Pulse') {
+                    if (canUsePurifying) {
+                        possibleMoves.push(i);
+                    }
+                }
+                // Edge case for ULT
+                else if (userData.character.moves[i].name === 'ULT: Water Surge') {
+                    if (self.curHP <= Math.floor(userData.character.hp*0.4)) {
+                        possibleMoves.push(i);
+                        ultReady = true;
+                    }
+                }
+                // Edge case for Healing Rain; Don't use if near full HP
+                else {
+                    if ((self.character.hp - self.curHP) > 5 || (ally.character.hp - ally.curHP) > 5) {
+                        possibleMoves.push(i);    
+                    }  
+                }
+            }
+        }
+
+        // Determine target
+        if (Math.floor(Math.random()*2) === 0) {
+            if (foe1.active) {
+                target = foe1;    
+            }
+            else {
+                target = foe2;
+            }
+        }
+        else {
+            if (foe2.active) {
+                target = foe2;    
+            }
+            else {
+                target = foe1;
+            }
+        }
+
+        // Determine move; pick random index from possible moves array
+        let choice = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
+        move = userData.character.moves[choice].name;
+
+        // If below 60% mana, 70% chance of saving and just using basic attack
+        // Choosing 60% for Water Slime since more mana
+        if (self.curMANA < Math.floor(userData.character.mana*0.6)) {
+            if (Math.floor(Math.random()*10) < 7) {
+                move = userData.character.moves[0].name;
+            }
+        }
+
+        // If ULT was ready, 80% chance to just use it
+        if (ultReady) {
+            if (Math.floor(Math.random()*10) < 8) {
+                move = userData.character.moves[3].name;    
+            }
+        }
+
+        // If using Purifying Pulse, target should be self
+        if (move === 'Purifying Pulse') {
+            target = self;
+        }
+        // If using Healing Rain, target should be self or ally
+        else if (move === 'Healing Rain') {
+            if (Math.floor(Math.random()*2) === 0) {
+                if (ally.active && ((ally.character.hp - ally.curHP) > 5)) {
+                    target = ally;    
+                }
+                else {
+                    target = self;
+                }
+            }
+            else {
+                if ( !ally.active || (self.character.hp - self.curHP) > 5) {
+                    target = self;    
+                }
+                else {
+                    target = ally;
+                }
+            }
+        }
+
+        return [move, target];
+    }
+    
+    // Handles CPU move and target selection
+    const cpuMove = (userData) => {
+        let character = userData.character;
+        let move = '';
+        let target = '';
+
+        // Call respective character CPU function
+        if (character.name === 'Slime') {
+            [move, target] = cpuSlime(userData);
+        }
+        else if (character.name === 'Fire Slime') {
+            [move, target] = cpuFireSlime(userData);
+        }
+        else if (character.name === 'Water Slime') {
+            [move, target] = cpuWaterSlime(userData);
+        }
+
+        // Figure out which set functions to call
+        if (userData.id === 1) {
+            setP1Attack(move);
+            setP1Target(target);
+        }
+        else if (userData.id === 2) {
+            setP2Attack(move);
+            setP2Target(target);
+        }
+        else if (userData.id === 3) {
+            setP3Attack(move);
+            setP3Target(target);
+        }
+        else {
+            setP4Attack(move);
+            setP4Target(target);
         }
     }
 
@@ -1356,7 +1897,6 @@ const BSGame = (props) => {
     const changePhase = (moveOrTarget) => {
 
         let target = '';
-        let damageValue = 0;
 
         // Assign target data
         if (moveOrTarget === '1') {
@@ -1382,26 +1922,122 @@ const BSGame = (props) => {
             setPhase('1B');
         }
 
+        // 0T (Edge case for P1 being a CPU and game starts)
+        else if (phase === '0T') {
+            setMessage('P1 CPU has chosen their move');
+            setPhase('1T');
+            cpuMove(p1);
+        }
+
+        // 1T (CPU P1 chooses move and target)
+        else if (phase === '1T') {
+            if (p2.active) {
+                if (isHumanPlayer[1]) {
+                    setMessage('P2, select your move');
+                    setPhase('2A');
+                    setCurrentUser(p2);    
+                }
+                else {
+                    setMessage('P2 CPU has chosen their move');
+                    setPhase('2T');
+                    cpuMove(p2);
+                }
+            }
+            else if (p3.active) {
+                if (isHumanPlayer[2]) {
+                    setMessage('P3, select your move');
+                    setPhase('3A');
+                    setCurrentUser(p3);     
+                }
+                else {
+                    setMessage('P3 CPU has chosen their move');
+                    setPhase('3T');
+                    cpuMove(p3);
+                }
+            }
+            else {
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);    
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                } 
+            }
+        }
+
         // 1B (P1 choose target)
+        // Next phase depends on remaining players and whether those players are human or CPU
         else if (phase === '1B') {
             setP1Target(target);
 
             if (p2.active) {
-                setMessage('P2, select your move');
-                setPhase('2A');
-                setCurrentUser(p2);    
+                if (isHumanPlayer[1]) {
+                    setMessage('P2, select your move');
+                    setPhase('2A');
+                    setCurrentUser(p2);    
+                }
+                else {
+                    setMessage('P2 CPU has chosen their move');
+                    setPhase('2T');
+                    cpuMove(p2);
+                }
             }
             else if (p3.active) {
-                setMessage('P3, select your move');
-                setPhase('3A');
-                setCurrentUser(p3);  
+                if (isHumanPlayer[2]) {
+                    setMessage('P3, select your move');
+                    setPhase('3A');
+                    setCurrentUser(p3);     
+                }
+                else {
+                    setMessage('P3 CPU has chosen their move');
+                    setPhase('3T');
+                    cpuMove(p3);
+                }
             }
             else {
-                setMessage('P4, select your move');
-                setPhase('4A');
-                setCurrentUser(p4);  
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);    
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                } 
             }
-            
+        }
+
+        // 2T (CPU P2 chooses move and target)
+        else if (phase === '2T') {
+            if (p3.active) {
+                if (isHumanPlayer[2]) {
+                    setMessage('P3, select your move');
+                    setPhase('3A');
+                    setCurrentUser(p3);     
+                }
+                else {
+                    setMessage('P3 CPU has chosen their move');
+                    setPhase('3T');
+                    cpuMove(p3);
+                }
+            }
+            else {
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);    
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                } 
+            }
         }
 
         // 2A (P2 choose move)
@@ -1416,16 +2052,108 @@ const BSGame = (props) => {
             setP2Target(target);
 
             if (p3.active) {
-                setMessage('P3, select your move');
-                setPhase('3A');
-                setCurrentUser(p3);    
+                if (isHumanPlayer[2]) {
+                    setMessage('P3, select your move');
+                    setPhase('3A');
+                    setCurrentUser(p3);     
+                }
+                else {
+                    setMessage('P3 CPU has chosen their move');
+                    setPhase('3T');
+                    cpuMove(p3);
+                }
             }
             else {
-                setMessage('P4, select your move');
-                setPhase('4A');
-                setCurrentUser(p4); 
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);    
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                } 
             }
             
+        }
+
+        // 3T (CPU P3 chooses move and target)
+        else if (phase === '3T') {
+            if (p4.active) {
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);     
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                }
+            }
+
+            // Otherwise, move to attacking rounds
+            else if (turnOrder[0].active) {
+                if (turnOrder[0].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[0].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[0].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK1');
+            }
+            else if (turnOrder[1].active) {
+                if (turnOrder[1].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[1].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[1].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK2');
+            }
+            else if (turnOrder[2].active) {
+                if (turnOrder[2].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[2].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[2].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK3');
+            }
+            else {
+                if (turnOrder[3].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[3].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[3].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK4');
+            }
         }
 
         // 3A (P3 choose move)
@@ -1440,9 +2168,16 @@ const BSGame = (props) => {
             setP3Target(target);
 
             if (p4.active) {
-                setMessage('P4, select your move');
-                setPhase('4A');
-                setCurrentUser(p4);    
+                if (isHumanPlayer[3]) {
+                    setMessage('P4, select your move');
+                    setPhase('4A');
+                    setCurrentUser(p4);     
+                }
+                else {
+                    setMessage('P4 CPU has chosen their move');
+                    setPhase('4T');
+                    cpuMove(p4);
+                }
             }
             else if (turnOrder[0].active) {
                 if (turnOrder[0].id === 1) {
@@ -1505,6 +2240,70 @@ const BSGame = (props) => {
                 setPhase('ATK4');
             }
             
+        }
+
+        // 4T (CPU P4 chooses move and target)
+        else if (phase === '4T') {
+            if (turnOrder[0].active) {
+                if (turnOrder[0].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[0].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[0].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK1');
+            }
+            else if (turnOrder[1].active) {
+                if (turnOrder[1].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[1].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[1].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK2');
+            }
+            else if (turnOrder[2].active) {
+                if (turnOrder[2].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[2].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[2].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK3');
+            }
+            else {
+                if (turnOrder[3].id === 1) {
+                    useMove(p1, p1Target, p1Attack)    
+                }
+                else if (turnOrder[3].id === 2) {
+                    useMove(p2, p2Target, p2Attack);
+                }
+                else if (turnOrder[3].id === 3) {
+                    useMove(p3, p3Target, p3Attack);
+                }
+                else {
+                    useMove(p4, p4Target, p4Attack);
+                }
+                setPhase('ATK4');
+            }
         }
 
         // 4A (P4 choose move)
@@ -1945,14 +2744,28 @@ const BSGame = (props) => {
             }
             else {
                 if (p1.active) {
-                    setMessage('P1, select your move');
-                    setPhase('1A');
-                    setCurrentUser(p1);    
+                    if (isHumanPlayer[0]) {
+                        setMessage('P1, select your move');
+                        setPhase('1A');
+                        setCurrentUser(p1);    
+                    }
+                    else {
+                        setMessage('P1 CPU has chosen their move');
+                        setPhase('1T');
+                        cpuMove(p1);
+                    }   
                 }
                 else {
-                    setMessage('P2, select your move');
-                    setPhase('2A');
-                    setCurrentUser(p2);
+                    if (isHumanPlayer[1]) {
+                        setMessage('P2, select your move');
+                        setPhase('2A');
+                        setCurrentUser(p2);    
+                    }
+                    else {
+                        setMessage('P2 CPU has chosen their move');
+                        setPhase('2T');
+                        cpuMove(p2);
+                    }
                 }    
             }
         }

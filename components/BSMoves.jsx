@@ -10,5 +10,9 @@ export default {
     'Water Gun': 'https://art.pixilart.com/8db8d5f44ed91fa.gif',
     'Heal': 'https://art.pixilart.com/9c87d788adc1523.gif',
     'Purifying Pulse': 'https://art.pixilart.com/d5debc1860b9011.gif',
-    'ULT: Water Surge': 'https://art.pixilart.com/294a46b5949ecdc.gif'
+    'ULT: Water Surge': 'https://art.pixilart.com/294a46b5949ecdc.gif',
+    'Smoke Rush': 'https://art.pixilart.com/1d5b0fd9f54ef8b.gif',
+    'Shadow Burst': 'https://art.pixilart.com/92f8918ebfaf509.gif',
+    'Blood Blitz': 'https://art.pixilart.com/0fc1737a175ca5c.gif',
+    'Ice Barrage': 'https://art.pixilart.com/fbd05b92da0684e.gif'
 }
