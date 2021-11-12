@@ -31,7 +31,7 @@ const BSCharSelect = (props) => {
             setCurrentlySelected(p4Character);
         }
         else {
-            props.onStart([p1Character, p2Character, p3Character, p4Character]);
+            props.onStart([p1Character, p2Character, p3Character, p4Character], humanPlayers);
             return;
         }
         setPlayerSelecting(prev => prev+1);
@@ -128,6 +128,7 @@ const BSCharSelect = (props) => {
                     <BSCharSelectCard onSelect={handleCardSelect} character={BSCharacters.slime} selected={currentlySelected}/>
                     <BSCharSelectCard onSelect={handleCardSelect} character={BSCharacters.fireSlime} selected={currentlySelected}/>
                     <BSCharSelectCard onSelect={handleCardSelect} character={BSCharacters.waterSlime} selected={currentlySelected}/>
+                    <BSCharSelectCard onSelect={handleCardSelect} character={BSCharacters.zaru} selected={currentlySelected}/>
                 </View>
             </View>
 
