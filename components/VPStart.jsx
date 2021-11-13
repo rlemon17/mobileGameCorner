@@ -82,9 +82,10 @@ const VPStart = (props) => {
 
 const styles = StyleSheet.create({
     wholeContainer: {
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignContent: 'center'
+        height: '100%',
+        width: '100%',
+        backgroundColor: Colors.primaryOff,
+        alignItems: 'center'
     },
     rowContainer: {
         flexDirection: 'row',
@@ -118,27 +119,42 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        bottom: 20,
         backgroundColor: '#ffffff',
-        shadowColor: '#cccccc',
-        shadowOffset: { width: 0, height: 1 },
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.75,
-        shadowRadius: 1, 
+        shadowRadius: 2,
     },
     title: {
-        padding: 20,
-        textAlign: 'center'
+        paddingTop: 40,
+        paddingBottom: 10,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 30,
+        color: Colors.primary,
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.75,
+        shadowRadius: 1,
     },
     button: {
-        padding: 10,
-        borderRadius: 20,
+        padding: 18,
+        borderRadius: 30,
         backgroundColor: Colors.primary,
+        marginHorizontal: "1%",
+        marginBottom: 6,
         minWidth: "48%",
-        textAlign: "center"
+        textAlign: "center",
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
     },
     buttonText: {
         textAlign: 'center',
-        color: '#fff'
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 18
     },
 })
 

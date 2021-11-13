@@ -14,5 +14,5 @@ export default {
     'Smoke Rush': 'https://art.pixilart.com/1d5b0fd9f54ef8b.gif',
     'Shadow Burst': 'https://art.pixilart.com/92f8918ebfaf509.gif',
     'Blood Blitz': 'https://art.pixilart.com/0fc1737a175ca5c.gif',
-    'Ice Barrage': 'https://art.pixilart.com/fbd05b92da0684e.gif'
+    'ULT: Ice Barrage': 'https://art.pixilart.com/fbd05b92da0684e.gif'
 }

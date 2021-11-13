@@ -91,7 +91,7 @@ const BSGame = (props) => {
     const [p2Animation, setP2Animation] = useState('');
     const [p3Animation, setP3Animation] = useState('');
     const [p4Animation, setP4Animation] = useState('');
-
+    
     const [turnOrder, setTurnOrder] = useState([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD));
     
     // Resets damage numbers to 0 and animations to blank strings
@@ -152,6 +152,13 @@ const BSGame = (props) => {
         setMessage('Rematch!');
         setSubMessage('');
         setCurrentUser(p1);
+
+        let newTurnOrder = [p1, p2, p3, p4];
+        for (let i = newTurnOrder.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random()*(i+1));
+            [newTurnOrder[i], newTurnOrder[j]] = [newTurnOrder[j], newTurnOrder[i]];
+        }
+        setTurnOrder(newTurnOrder.sort((a, b) => b.curSPD - a.curSPD));
 
         setP1Statuses([]);
         setP2Statuses([]);
@@ -1695,6 +1702,11 @@ const BSGame = (props) => {
                 }
             }
         }
+        // Also check if both opponents are already slower than both allies
+        if (self.curSPD > foe1.curSPD && self.curSPD > foe2.curSPD &&
+            ally.curSPD > foe1.curSPD && ally.curSPD > foe2.curSPD) {
+                canUseSlimeDrench = false;
+        }
 
         // For more incentive to use ULT
         let ultReady = false;
@@ -1951,7 +1963,7 @@ const BSGame = (props) => {
             }
         }
 
-        // For more incentive to use ULT
+        // For more incentive to use ULT or Healing Rain
         let ultReady = false;
 
         // Determine if other moves are usable
@@ -1974,7 +1986,7 @@ const BSGame = (props) => {
                 // Edge case for Healing Rain; Don't use if near full HP
                 else {
                     if ((self.character.hp - self.curHP) > 5 || (ally.character.hp - ally.curHP) > 5) {
-                        possibleMoves.push(i);    
+                        possibleMoves.push(i);
                     }  
                 }
             }
@@ -2021,10 +2033,10 @@ const BSGame = (props) => {
         if (move === 'Purifying Pulse') {
             target = self;
         }
-        // If using Healing Rain, target should be self or ally
+        // If using Healing Rain, target should be self or ally. Decide based on who needs it more.
         else if (move === 'Healing Rain') {
             if (Math.floor(Math.random()*2) === 0) {
-                if (ally.active && ((ally.character.hp - ally.curHP) > 5)) {
+                if (ally.active && (ally.character.hp/ally.curHP) > (self.character.hp/self.curHP)) {
                     target = ally;    
                 }
                 else {
@@ -2032,12 +2044,145 @@ const BSGame = (props) => {
                 }
             }
             else {
-                if ( !ally.active || (self.character.hp - self.curHP) > 5) {
+                if (!ally.active || (self.character.hp/self.curHP) > (ally.character.hp/ally.curHP)) {
                     target = self;    
                 }
                 else {
                     target = ally;
                 }
+            }
+        }
+
+        return [move, target];
+    }
+
+    // Zaru CPU
+    const cpuZaru = (userData) => {
+        let move = '';
+        let target = '';
+        let possibleMoves = [0];
+
+        // Figure out foes and allies
+        let self = p1;
+        let ally = p2;
+        let foe1 = p3;
+        let foe2 = p4;
+
+        if (userData.id === 2) {
+            self = p2;
+            ally = p1;
+        }
+        else if (userData.id === 3) {
+            self = p3;
+            ally = p4;
+            foe1 = p1;
+            foe2 = p2;
+        }
+        else if (userData.id === 4) {
+            self = p4;
+            ally = p3;
+            foe1 = p1;
+            foe2 = p2;
+        }
+
+        // Making sure CPU doesn't use Shadow Burst or Blood Blitz in certain conditions
+        let canUseShadow = true;
+        let canUseBlood = true;
+
+        // No Shadow Burst if enemy's ATK already down
+        if (foe1.id === 1) {
+            for (let i = 0; i < p1Statuses.length; i++) {
+                if (p1Statuses[i].name === 'atkDown') {
+                    canUseShadow = false;
+                }
+            }
+        }
+        else {
+            for (let i = 0; i < p3Statuses.length; i++) {
+                if (p3Statuses[i].name === 'atkDown') {
+                    canUseShadow = false;
+                }
+            }
+        }
+
+        // No Blood Blitz if above 80% HP
+        if (self.curHP > (self.character.hp*0.8)) {
+            canUseBlood = false;
+        }
+
+        // For more incentive to use ULT or Blood Blitz
+        let useBlood = false;
+        let ultReady = false;
+
+        // Determine if other moves are usable
+        for (let i = 1; i < userData.character.moves.length; i++) {
+            // Add the move if enough mana
+            if (self.curMANA >= userData.character.moves[i].manaCost) {
+                // Edge case for Shadow Burst
+                if (userData.character.moves[i].name === 'Shadow Burst') {
+                    if (canUseShadow) {
+                        possibleMoves.push(i);
+                    }
+                }
+                // Edge case for ULT
+                else if (userData.character.moves[i].name === 'ULT: Ice Barrage') {
+                    if (self.curHP <= Math.floor(userData.character.hp*0.4)) {
+                        possibleMoves.push(i);
+                        ultReady = true;
+                    }
+                }
+                // Edge case for Blood Blitz
+                else {
+                    if (canUseBlood) {
+                        possibleMoves.push(i);
+                        if (userData.curHP < Math.floor(userData.character.hp*0.3)) {
+                            useBlood = true;
+                        }
+                    } 
+                }
+            }
+        }
+
+        // Determine target
+        if (Math.floor(Math.random()*2) === 0) {
+            if (foe1.active) {
+                target = foe1;    
+            }
+            else {
+                target = foe2;
+            }
+        }
+        else {
+            if (foe2.active) {
+                target = foe2;    
+            }
+            else {
+                target = foe1;
+            }
+        }
+
+        // Determine move; pick random index from possible moves array
+        let choice = possibleMoves[Math.floor(Math.random()*possibleMoves.length)];
+        move = userData.character.moves[choice].name;
+
+        // If below 45% mana, 70% chance of saving and just using basic attack
+        if (self.curMANA < Math.floor(userData.character.mana*0.45)) {
+            if (Math.floor(Math.random()*10) < 7) {
+                move = userData.character.moves[0].name;
+            }
+        }
+
+        // If below 30% HP, 80% chance to use Blood Blitz to heal
+        if (useBlood) {
+            if (Math.floor(Math.random()*10) < 8) {
+                move = userData.character.moves[2].name;    
+            }
+        }
+
+        // Above all else, if ULT was ready, 80% chance to just use it
+        if (ultReady) {
+            if (Math.floor(Math.random()*10) < 8) {
+                move = userData.character.moves[3].name;    
             }
         }
 
@@ -2059,6 +2204,9 @@ const BSGame = (props) => {
         }
         else if (character.name === 'Water Slime') {
             [move, target] = cpuWaterSlime(userData);
+        }
+        else if (character.name === 'Zaru') {
+            [move, target] = cpuZaru(userData);
         }
 
         // Figure out which set functions to call
@@ -2937,7 +3085,13 @@ const BSGame = (props) => {
                 }
 
                 // Determine next turn order
-                setTurnOrder([p1, p2, p3, p4].sort((a, b) => b.curSPD - a.curSPD))
+                // Randomize a bit for those with same SPD stats
+                let newTurnOrder = [p1, p2, p3, p4];
+                for (let i = newTurnOrder.length - 1; i > 0; i--) {
+                    let j = Math.floor(Math.random()*(i+1));
+                    [newTurnOrder[i], newTurnOrder[j]] = [newTurnOrder[j], newTurnOrder[i]];
+                }
+                setTurnOrder(newTurnOrder.sort((a, b) => b.curSPD - a.curSPD));
                 
                 setPhase('ATK5');
             } 

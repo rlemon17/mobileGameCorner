@@ -234,7 +234,11 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: Colors.accent,
         marginHorizontal: 5,
-        marginTop: 10
+        marginTop: 10,
+        shadowColor: Colors.accent,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
     },
     textStyle: {
         color: "white",
