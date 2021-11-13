@@ -129,8 +129,8 @@ export default {
     },
     zaru: {
         name: 'Zaru',
-        sprite: 'https://art.pixilart.com/ecb1586b39ea102.png',
-        animated: 'https://art.pixilart.com/ecb1586b39ea102.gif',
+        sprite: 'https://art.pixilart.com/8ddf1280b28d0c7.png',
+        animated: 'https://art.pixilart.com/8ddf1280b28d0c7.gif',
         hp: 35,
         atk: 11,
         def: 2,
