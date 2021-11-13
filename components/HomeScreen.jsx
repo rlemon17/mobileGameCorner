@@ -18,7 +18,8 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.entireContainer}>
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>Lemon's</Text>
-                <Text style={styles.title2}>Mobile Game Corner</Text>
+                <Text style={styles.title2}>Mobile</Text>
+                <Text style={styles.title2}>Game Corner</Text>
             </View>
             <View style={styles.gameContainer}>
 
@@ -68,7 +69,8 @@ const HomeScreen = ({ navigation }) => {
 
             </View>
 
-            <HomeConfirm handlePress={confirmGame} gameInfo={gameInfo} />
+            <HomeConfirm handlePress={confirmGame} gameInfo={gameInfo} />    
+
         </View>
     );
 }
@@ -76,7 +78,8 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     entireContainer: {
         alignItems: 'center',
-        justifyContent: 'center'
+        height: '100%',
+        backgroundColor: Colors.primaryOff
     },
     gameContainer: {
         alignItems: 'center',
@@ -84,16 +87,26 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        textAlign: 'center'
+        textAlign: 'center',
+        color: Colors.primary,
+        marginBottom: 5
     },
     title2: {
-        fontSize: 30,
+        fontSize: 40,
         fontWeight: 'bold',
         textAlign: 'center',
-        padding: 5
+        color: Colors.primary
     },
     titleContainer: {
-        padding: 20
+        padding: 20,
+        marginHorizontal: 5,
+        marginTop: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 1},
+        shadowOpacity: 0.75,
+        shadowRadius: 2
     },
     cardStyle: {
         padding: 10,
@@ -112,7 +125,11 @@ const styles = StyleSheet.create({
         minHeight: 60,
         textAlign: "center",
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 2},
+        shadowOpacity: 0.75,
+        shadowRadius: 1
     },
     buttonSelected: {
         backgroundColor: Colors.accent

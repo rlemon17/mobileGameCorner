@@ -142,10 +142,10 @@ const BSCharSelect = (props) => {
                         <Text>Back</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                        style={styles.button}
+                        style={[styles.button, playerSelecting === 4 && styles.startButton]}
                         onPress={nextPlayer}
                     >
-                        <Text>{playerSelecting === 4 ? 'Start!' : 'Next'}</Text>
+                        <Text style={[playerSelecting === 4 && styles.startText]}>{playerSelecting === 4 ? 'S T A R T!' : 'Next'}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -230,7 +230,18 @@ const styles = StyleSheet.create({
         marginHorizontal: 40,
         minWidth: 100,
         textAlign: "center",
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: Colors.primaryOff,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
+    },
+    startButton: {
+        backgroundColor: Colors.primaryOff
+    },
+    startText: {
+        fontWeight: 'bold',
+        fontSize: 15
     }
 })
 

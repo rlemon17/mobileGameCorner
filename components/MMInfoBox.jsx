@@ -47,7 +47,11 @@ const styles = StyleSheet.create({
         margin: 6,
         width: 100,
         textAlign: "center",
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: Colors.accent,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
     },
     cardStyle: {
         height: 100,

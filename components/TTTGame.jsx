@@ -251,7 +251,11 @@ const styles = StyleSheet.create({
     scoreContainer: {
         maxHeight: 100,
         borderRadius: 20,
-        bottom: 270
+        bottom: 270,
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2
     },
     turnTeller: {
         position: 'absolute',
@@ -278,7 +282,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.accent,
         position: 'absolute',
         bottom: -90,
-        right: -50
+        right: -50,
+        shadowColor: Colors.accent,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.75,
+        shadowRadius: 3,
     }
 })
 

@@ -153,8 +153,8 @@ export default {
                 desc: 'Single-target attack that heals Zaru for 50% of damage dealt'
             },
             {
-                name: 'Ice Barrage',
-                manaCost: 11,
+                name: 'ULT: Ice Barrage',
+                manaCost: 10,
                 desc: 'Multi-target attack. Inflicts frozen status on opponents'
             }
         ]

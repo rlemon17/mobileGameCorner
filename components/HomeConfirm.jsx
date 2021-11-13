@@ -31,10 +31,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         position: 'absolute',
-        top: '100%'
+        top: '100%',
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 2},
+        shadowOpacity: 0.75,
+        shadowRadius: 1
     },
     confirmText: {
-        paddingBottom: 20
+        paddingBottom: 20,
+        textAlign: 'center'
     },
     button: {
         padding: 10,
@@ -46,7 +51,11 @@ const styles = StyleSheet.create({
         minHeight: 60,
         textAlign: "center",
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 2},
+        shadowOpacity: 0.75,
+        shadowRadius: 1
     },
     buttonText: {
         color: '#ffffff',

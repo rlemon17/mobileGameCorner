@@ -513,7 +513,11 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         backgroundColor: Colors.accent,
-        textAlign: "center"
+        textAlign: "center",
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
     },
     button2: {
         backgroundColor: Colors.bg
@@ -534,7 +538,11 @@ const styles = StyleSheet.create({
     },
     highlightBetText: {
         backgroundColor: Colors.accentOff,
-        color: Colors.bg
+        color: Colors.bg,
+        shadowColor: Colors.accent,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 10,
     },
     infoContainer: {
         flexDirection: 'row',
@@ -576,7 +584,7 @@ const styles = StyleSheet.create({
         marginTop: 30,
         fontSize: 25,
         color: Colors.accent,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     }
 })
 

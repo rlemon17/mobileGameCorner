@@ -528,7 +528,11 @@ const styles = StyleSheet.create({
         margin: 5,
         padding: 10,
         alignItems: 'center',
-        borderRadius: 20
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.75,
+        shadowRadius: 2,
     },
     scoreText: {
         textAlign: 'center',
