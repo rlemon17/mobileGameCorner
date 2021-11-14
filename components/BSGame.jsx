@@ -1323,7 +1323,7 @@ const BSGame = (props) => {
                     
                     setP1Statuses(prev => {
                         let newArr = [...prev];
-                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison' && status.name !== 'frozen');
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
@@ -1339,7 +1339,7 @@ const BSGame = (props) => {
                     
                     setP2Statuses(prev => {
                         let newArr = [...prev];
-                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison' && status.name !== 'frozen');
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
@@ -1359,7 +1359,7 @@ const BSGame = (props) => {
                     
                     setP3Statuses(prev => {
                         let newArr = [...prev];
-                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison' && status.name !== 'frozen');
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
@@ -1375,7 +1375,7 @@ const BSGame = (props) => {
                     
                     setP4Statuses(prev => {
                         let newArr = [...prev];
-                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison');
+                        newArr = newArr.filter(status => status.name !== 'burn' && status.name !== 'poison' && status.name !== 'frozen');
 
                         for (let i = 0; i < newArr.length; i++) {
                             if (newArr[i].name === 'defUp') {
