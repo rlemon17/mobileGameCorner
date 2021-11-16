@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "gameCorner",
-    "slug": "gameCorner",
+    "name": "Lemon's Mobile Game Corner",
+    "slug": "lemongamecorner",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./images/appIcon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./images/appSplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -27,6 +27,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": ""
   }
 }
